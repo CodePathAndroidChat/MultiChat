@@ -45,3 +45,6 @@ AndroidManifiest.xml
 
 replace -> API_KEY_HERE
 
+Get key here: 
+https://fabric.io/kits/android/crashlytics/install
+
