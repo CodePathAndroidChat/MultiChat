@@ -35,3 +35,13 @@ Multi-language chat allows users who speak different languages to communicate.
 ## Open-source libraries used
 
 - [Translate API](https://tech.yandex.com/translate/) - provides access to the Yandex online machine translation service. It supports more than 90 languages and can translate separate words or complete texts.
+
+
+
+## To setup Fabric key:
+
+Edit:
+AndroidManifiest.xml
+
+replace -> API_KEY_HERE
+
