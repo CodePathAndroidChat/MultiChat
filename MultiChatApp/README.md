@@ -61,3 +61,9 @@ replace -> API_KEY_HERE
 Get key here: 
 https://fabric.io/kits/android/crashlytics/install
 
+## Wireframe
+
+Files of the wireframe contains in app/main/src/v2
+
+<img src='https://i.imgur.com/x13ys3I.gif' title='Video Walkthrough' alt='Video Walkthrough' />
+
