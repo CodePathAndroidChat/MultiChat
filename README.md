@@ -24,7 +24,7 @@ Multi-language chat allows users who speak different languages to communicate.
 
   
 **optional**
-
+* [ ] The Application and keyboard are in different langauges
 * [ ] User can share his/her location in the chat message 
 * [ ] User can add image/picture to the chat message
 * [ ] User can use voice recognition to type the message
