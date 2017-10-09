@@ -50,7 +50,7 @@ Multi-language chat allows users who speak different languages to communicate.
 - [Translate API](https://tech.yandex.com/translate/) - provides access to the Yandex online machine translation service. It supports more than 90 languages and can translate separate words or complete texts.
 - [Firebase](https://firebase.google.com/) - push notificaitons, stores the chat histories 
 - [Google Map](https://developers.google.com/maps/android/) - to displays the map view of the app users
-
+- [Goole Signin](https://developers.google.com/identity/sign-in/android/start-integrating) 
 ## To setup Fabric key:
 
 Edit:
