@@ -1,3 +1,5 @@
+MultiChatApp/app/fabric.properties
+MultiChatApp/app/google-services.json
 .DS_Store
 # built application files
 *.apk
