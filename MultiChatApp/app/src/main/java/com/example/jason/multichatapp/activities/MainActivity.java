@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 import com.example.jason.multichatapp.R;
+import com.example.jason.multichatapp.models.ChatMessage;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,6 +22,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
+
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,9 +57,13 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
+                // TODO figure out how to take all stored messages (returns last one now)
+                Log.d(TAG, "dataSnapshot: " + dataSnapshot);
+                HashMap<String, String> value = (HashMap<String, String>) dataSnapshot.getValue();
                 Log.d(TAG, "Value is: " + value);
-                tvMessages.append("\n" + value);
+                if (value != null) {
+                    tvMessages.append("\n" + value.get("text"));
+                }
             }
 
             @Override
@@ -94,16 +103,13 @@ public class MainActivity extends AppCompatActivity {
     public void onSendMessageClicked() {
         // Write a message to the database
         DatabaseReference myRef = mDatabase.getReference("message"); // every message now overrides previous one because of the lack of Model
-        myRef.setValue(etMessage.getText().toString());
+        myRef.setValue(new ChatMessage(
+            new SimpleDateFormat("YYYY-MM-DD'T'HH:mm:ss'Z'").format(new Timestamp(System.currentTimeMillis())).toString(),
+            etMessage.getText().toString(),
+            uid,
+            "en"));
         Log.d(TAG, "Sending message to Firebase Database: " + etMessage.getText().toString());
 
-        //TODO Create Message Model and set all the fields like:
-//        FriendlyMessage friendlyMessage = new
-//            FriendlyMessage(etMessage.getText().toString(),
-//            mUsername,
-//            language);
-//        myRef.child(MESSAGES_CHILD) // define scheme for a database https://firebase.google.com/docs/database/web/structure-data
-//            .push().setValue(friendlyMessage);
         etMessage.setText("");
     }
 }
