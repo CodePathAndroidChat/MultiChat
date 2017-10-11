@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'io.fabric'
 
 repositories {
@@ -24,6 +23,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    dataBinding.enabled = true
 }
 
 
@@ -42,13 +42,16 @@ buildscript {
     }
 }
 
+ext {
+    supportLibVersion = '26.1.0'  // variable that can be referenced to keep support libs consistent
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:26.+'
+    compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
@@ -62,6 +65,9 @@ dependencies {
     // butterknife
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+    // Design support library
+    compile "com.android.support:design:${supportLibVersion}"
+
 }
 
 apply plugin: 'com.google.gms.google-services'
