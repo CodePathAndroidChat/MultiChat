@@ -77,6 +77,8 @@
             android:layout_alignStart="@+id/tvChatIn"
             android:layout_below="@+id/tvPin"
             android:layout_marginTop="56dp"
+            android:background="@color/green_normal"
+            android:textColor="@android:color/white"
             android:text="@string/sign_up" />
     </RelativeLayout>
 </layout>

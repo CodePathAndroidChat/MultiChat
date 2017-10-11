@@ -32,6 +32,8 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/etPwd"
             android:layout_below="@+id/etPwd"
+            android:background="@color/green_normal"
+            android:textColor="@android:color/white"
             android:layout_marginTop="56dp"
             android:text="@string/log_in" />
 
