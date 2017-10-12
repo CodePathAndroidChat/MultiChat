@@ -16,7 +16,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.crashlytics.android.Crashlytics;
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.Utils;
 import com.example.jason.multichatapp.databinding.ActivityMainBinding;
@@ -26,19 +25,16 @@ import com.example.jason.multichatapp.fragments.UsersListFragment;
 import com.example.jason.multichatapp.fragments.UsersMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "@@@";
     private FirebaseAuth mAuth;
-    private FirebaseDatabase mDatabase;
     private FirebaseUser mUser;
-    String uid;
+    private String uid;
 
+
+    // for setting up the views
     private ActivityMainBinding binding;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -52,37 +48,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-        Fabric.with(this, new Crashlytics());
         // Initialize the FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = mDatabase.getReference("message");
-
         setupView(savedInstanceState);
-
-        // Read from the database
-//        myRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                // TODO figure out how to take all stored messages (returns last one now)
-//                Log.d(TAG, "dataSnapshot: " + dataSnapshot);
-//                HashMap<String, String> value = (HashMap<String, String>) dataSnapshot.getValue();
-//                Log.d(TAG, "Value is: " + value);
-//                if (value != null) {
-//                    tvMessages.append("\n" + value.get("text"));
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError error) {
-//                // Failed to read value
-//                Log.w(TAG, "Failed to read value.", error.toException());
-//            }
-//        });
     }
 
     @Override
@@ -93,37 +61,23 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser != null) {
             // Name, email address, and profile photo Url
             String name = currentUser.getDisplayName(); //TODO need to set username
-//            String email = currentUser.getEmail();
-//            TextView tvEmail = (TextView) findViewById(R.id.tvUserName);
-//            tvEmail.setText(email);
+            String email = currentUser.getEmail();
             // Check if user's email is verified
-//            boolean emailVerified = currentUser.isEmailVerified();
+            boolean emailVerified = currentUser.isEmailVerified();
 
             // The user's ID, unique to the Firebase project. Do NOT use this value to
             // authenticate with your backend server, if you have one. Use
             // FirebaseUser.getToken() instead.
             uid = currentUser.getUid();
+            if (chatRoomFragment.isAdded()) {
+                chatRoomFragment.getUserInfo(email, uid);
+            }
             Log.d(TAG, "User is logged " + uid);
         } else {
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
         }
     }
-
-//    @OnClick(R.id.btnSendMessage)
-//    public void onSendMessageClicked() {
-//        // Write a message to the database
-//        DatabaseReference myRef = mDatabase.getReference("message"); // every message now overrides previous one because of the lack of Model
-//        myRef.setValue(new ChatMessage(
-//            new SimpleDateFormat("YYYY-MM-DD'T'HH:mm:ss'Z'").format(new Timestamp(System.currentTimeMillis())).toString(),
-//            etMessage.getText().toString(),
-//            uid,
-//            "en"));
-//        Log.d(TAG, "Sending message to Firebase Database: " + etMessage.getText().toString());
-//
-//        etMessage.setText("");
-//    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -158,9 +112,11 @@ public class MainActivity extends AppCompatActivity {
             usersListFragment = UsersListFragment.newInstance();
             editProfileFragment = EditProfileFragment.newInstance();
         }
-        showFragment(chatRoomFragment, usersListFragment, usersListFragment, editProfileFragment);
+        // open the global chat room page by default
         toolbar = (Toolbar) binding.toolbar;
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(R.string.global_chat_room);
+        showFragment(chatRoomFragment, usersListFragment, usersListFragment, editProfileFragment);
         drawerLayout = binding.drawerLayout;
         nvList = binding.nvList;
         // ActionBarDrawerToggle indicates to the user when a drawer is being open/closed
@@ -206,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             default:
                 showFragment(chatRoomFragment, usersMapFragment, usersListFragment, editProfileFragment);
         }
-        setTitle(item.getTitle());
+        getSupportActionBar().setTitle(item.getTitle());
         drawerLayout.closeDrawers();
     }
 
@@ -217,11 +173,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             ft.add(R.id.flContainer, show, show.getTag());
         }
-
         if (hide1.isAdded()) ft.hide(hide1);
         if (hide2.isAdded()) ft.hide(hide2);
         if (hide3.isAdded()) ft.hide(hide3);
-
         ft.commit();
     }
 }

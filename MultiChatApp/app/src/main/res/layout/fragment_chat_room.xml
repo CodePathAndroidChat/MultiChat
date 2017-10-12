@@ -1,15 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_margin="10dp">
 
         <TextView
+            android:id="@+id/tvUserId"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Global Chat Room"/>
+            android:layout_height="wrap_content"
+            />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tvUserName"
+            android:layout_below="@+id/tvUserId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:id="@+id/tvMessages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvUserName"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+        <EditText
+            android:id="@+id/etMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_your_message"
+            android:layout_alignBaseline="@+id/btnSendMessage"
+            android:layout_alignBottom="@+id/btnSendMessage"
+            android:layout_toRightOf="@+id/btnSendMessage"
+            android:layout_toEndOf="@+id/btnSendMessage"/>
+
+        <Button
+            android:id="@+id/btnSendMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="@string/send_button"/>
+
+    </RelativeLayout>
 </layout>
