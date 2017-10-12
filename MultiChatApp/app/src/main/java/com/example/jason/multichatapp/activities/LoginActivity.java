@@ -5,8 +5,10 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
+import com.example.jason.multichatapp.Constants;
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.Utils;
 import com.example.jason.multichatapp.adapters.LoginFragmentPagerAdapter;
@@ -71,6 +73,8 @@ public class LoginActivity extends AppCompatActivity implements
 
     private void setupView() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
+        setSupportActionBar((Toolbar) binding.toolbar);
+        getSupportActionBar().setTitle(Constants.WELCOME);
         // attach viewpager to the LoginFragmentPagerAdapter
         binding.viewPager.setAdapter(new LoginFragmentPagerAdapter(getSupportFragmentManager(), LoginActivity.this));
         // set viewpager on the tablayout to connect the pager with tabs
