@@ -1,5 +1,7 @@
 package com.example.jason.multichatapp.models;
 
+import java.util.Map;
+
 public class ChatMessage {
 
     private String id;
@@ -16,6 +18,14 @@ public class ChatMessage {
         this.text = text;
         this.name = name;
         this.language = language;
+    }
+
+    public ChatMessage fromObject(Map<String, String> message) {
+        this.timestamp = message.get("timestamp");
+        this.text = message.get("text");
+        this.name = message.get("name");
+        this.language = message.get("language");
+        return this;
     }
 
     public String getId() {

@@ -23,7 +23,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ChatRoomFragment-
@@ -44,6 +46,8 @@ public class ChatRoomFragment extends Fragment {
     private TextView tvEmail;
     private TextView tvMessages;
     private EditText etMessages;
+
+    private List<ChatMessage> chatMessagesList = new ArrayList<>();
 
     public static ChatRoomFragment newInstance() {
 
@@ -72,7 +76,8 @@ public class ChatRoomFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupView();
-        setupDatabase();
+        getAllMessagesFromDatabase(); // add all previous messages
+        getLastMessageFromDatabase(); // subscribe to listen for new messages
     }
 
     @Override
@@ -99,7 +104,7 @@ public class ChatRoomFragment extends Fragment {
             public void onClick(View view) {
                 // Write a message to the database
                 DatabaseReference myRef = mDatabase.getReference("message"); // every message now overrides previous one because of the lack of Model
-                myRef.setValue(new ChatMessage(
+                myRef.push().setValue(new ChatMessage(
                         new SimpleDateFormat("YYYY-MM-DD'T'HH:mm:ss'Z'").format(new Timestamp(System.currentTimeMillis())).toString(),
                         binding.etMessage.getText().toString(),
                         uid,
@@ -113,16 +118,42 @@ public class ChatRoomFragment extends Fragment {
         tvEmail.setText(email);
     }
 
-    private void setupDatabase() {
-        // ready from the database. To read data and listen for changes.
+    // returns all messages from Firebase
+    private void getAllMessagesFromDatabase() {
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(LOG_TAG, "dataSnapshot:" + dataSnapshot);
-                HashMap<String, String> value = (HashMap<String, String>) dataSnapshot.getValue();
-                Log.d(LOG_TAG, "Value is:" + value);
-                if (value != null) {
-                    tvMessages.append("\n" + value.get("text"));
+                for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    Map<String, String > message = (Map<String, String>) child.getValue();
+                    ChatMessage chatMessage = new ChatMessage().fromObject(message);
+                    Log.d(LOG_TAG, "chatMessage" + chatMessage);
+                    chatMessagesList.add(chatMessage);
+                    tvMessages.append("\n" + chatMessage.getText()); //TODO remove hardcoded textview update
+                    //get data, update dataset and remove listener
+                }
+                myRef.removeEventListener(this);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(LOG_TAG, "Failed to read value.", databaseError.toException());
+            }
+        });
+    }
+
+    // listens and appends to list last message from Firebase
+    private void getLastMessageFromDatabase() {
+        // ready from the database. To read data and listen for changes.
+        myRef.limitToLast(1).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(LOG_TAG, "dataSnapshot:" + dataSnapshot);
+                for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    Map<String, String > message = (Map<String, String>) child.getValue();
+                    ChatMessage chatMessage = new ChatMessage().fromObject(message);
+                    Log.d(LOG_TAG, "chatMessage" + chatMessage);
+                    chatMessagesList.add(chatMessage);
+                    tvMessages.append("\n" + chatMessage.getText()); //TODO remove hardcoded textview update
                 }
             }
             @Override
