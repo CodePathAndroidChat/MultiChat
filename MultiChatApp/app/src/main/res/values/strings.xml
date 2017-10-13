@@ -10,8 +10,8 @@
     <string name="welcome_to_world_chat">Welcome to World Chat</string>
     <string name="global_chat_room">Global Chat Room</string>
     <string name="map_of_users">Map of Users</string>
-    <string name="users_in_char">Users in Char</string>
-    <string name="edit_profile">Edit Profile</string>
+    <string name="users_in_char">Users in Chat</string>
+    <string name="edit_profile">Edit Profile</string>r
     <string name="notifications">Notifications</string>
     <string name="log_out">Log out</string>
     <string name="drawer_open">Open navigation drawer</string>

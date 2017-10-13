@@ -23,7 +23,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.Utils.MapUtils;
@@ -55,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // for setting up the views
     private ActivityMainBinding binding;
 
-
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
@@ -73,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         // Initialize the FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
+        // error check for google map api key
         if (TextUtils.isEmpty(getResources().getString(R.string.google_maps_key))) {
             throw new IllegalStateException("You forgot to supply a Google Maps API key");
         }
@@ -173,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 showFragment(chatRoomFragment, supportMapFragment, usersListFragment, editProfileFragment);
                 break;
             case R.id.mi_users_map:
-                showMap(supportMapFragment, chatRoomFragment, usersListFragment, editProfileFragment);
+                showMapFragment(supportMapFragment, chatRoomFragment, usersListFragment, editProfileFragment);
                 break;
             case R.id.mi_users_in_chat:
                 showFragment(usersListFragment, supportMapFragment, chatRoomFragment, editProfileFragment);
@@ -190,7 +189,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             default:
                 showFragment(chatRoomFragment, supportMapFragment, usersListFragment, editProfileFragment);
         }
+        // set the title of the action bar based on the page user is opening
         getSupportActionBar().setTitle(item.getTitle());
+        // close the burger menu
         drawerLayout.closeDrawers();
     }
 
@@ -207,6 +208,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ft.commit();
     }
 
+    private void showMapFragment(SupportMapFragment show, Fragment hide1, Fragment hide2, Fragment hide3) {
+        showFragment(show, hide1, hide2, hide3);
+        // Unique feature for map fragment. setup the callback
+        if (show != null) {
+            show.getMapAsync(this);
+        } else {
+            Log.d(TAG, show.getClass().getSimpleName() + " was null");
+        }
+    }
+
     //    called when the map is ready to be used
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -220,38 +231,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void showMap(SupportMapFragment show, Fragment hide1, Fragment hide2, Fragment hide3) {
-        // start the fragment
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        if (show.isAdded()) {
-            ft.show(show);
-        } else {
-            ft.add(R.id.flContainer, show, show.getTag());
-        }
-        if (hide1.isAdded()) ft.hide(hide1);
-        if (hide2.isAdded()) ft.hide(hide2);
-        if (hide3.isAdded()) ft.hide(hide3);
-        ft.commit();
-        // setup the callback
-        if (show != null) {
-            show.getMapAsync(this);
-        } else {
-            Toast.makeText(this, "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void setupMap(GoogleMap googleMap) {
         Log.d(TAG, "setupGoogleMap called");
-        askPermissionUserLocation();
+        askPermissionAndGetUserLocation();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void askPermissionUserLocation() {
+    private void askPermissionAndGetUserLocation() {
+        // ask user permission if the user hasn't accept to access his/her location
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
                 if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) &&
                         shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
                     // TODO: explanation on why we need the access current location permission
@@ -259,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_CODE_LOCATION);
         } else {
+            // if permission is granted already, get user location
             getUserCurrentLocation();
         }
     }
