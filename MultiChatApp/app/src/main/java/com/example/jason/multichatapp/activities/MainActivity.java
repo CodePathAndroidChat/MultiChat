@@ -1,55 +1,81 @@
 package com.example.jason.multichatapp.activities;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
+import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.jason.multichatapp.R;
-import com.example.jason.multichatapp.Utils;
+import com.example.jason.multichatapp.Utils.MapUtils;
+import com.example.jason.multichatapp.Utils.Utils;
 import com.example.jason.multichatapp.databinding.ActivityMainBinding;
 import com.example.jason.multichatapp.fragments.ChatRoomFragment;
 import com.example.jason.multichatapp.fragments.EditProfileFragment;
 import com.example.jason.multichatapp.fragments.UsersListFragment;
-import com.example.jason.multichatapp.fragments.UsersMapFragment;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.maps.android.ui.IconGenerator;
 
-public class MainActivity extends AppCompatActivity {
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
+
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private final String TAG = "@@@";
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private String uid;
-
-
     // for setting up the views
     private ActivityMainBinding binding;
+
+
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private NavigationView nvList;
     private ChatRoomFragment chatRoomFragment;
-    private UsersMapFragment usersMapFragment;
     private UsersListFragment usersListFragment;
     private EditProfileFragment editProfileFragment;
+    private SupportMapFragment supportMapFragment;
+    private GoogleMap googleMap;
 
+    private static final int REQUEST_CODE_LOCATION = 1;
+    private static final int REQUEST_CODE_LOCATION_COARSE = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Initialize the FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
+        if (TextUtils.isEmpty(getResources().getString(R.string.google_maps_key))) {
+            throw new IllegalStateException("You forgot to supply a Google Maps API key");
+        }
         setupView(savedInstanceState);
     }
 
@@ -96,19 +122,21 @@ public class MainActivity extends AppCompatActivity {
         super.onPostCreate(savedInstanceState);
         drawerToggle.syncState();
     }
+
     // restore the state when there is a new configuration change
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
     }
+
     // initialize view
     private void setupView(Bundle savedInstanceState) {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         if (savedInstanceState == null) {
             // if this is the first time opening this activity, initialize all the fragment
             chatRoomFragment = ChatRoomFragment.newInstance();
-            usersMapFragment = UsersMapFragment.newInstance();
+            supportMapFragment = SupportMapFragment.newInstance();
             usersListFragment = UsersListFragment.newInstance();
             editProfileFragment = EditProfileFragment.newInstance();
         }
@@ -131,36 +159,36 @@ public class MainActivity extends AppCompatActivity {
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                selectDrawerItem(item);
-                return true;
-            }
-        });
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        selectDrawerItem(item);
+                        return true;
+                    }
+                });
     }
 
     private void selectDrawerItem(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.mi_chat_room :
-                showFragment(chatRoomFragment, usersMapFragment, usersListFragment, editProfileFragment);
+            case R.id.mi_chat_room:
+                showFragment(chatRoomFragment, supportMapFragment, usersListFragment, editProfileFragment);
                 break;
-            case R.id.mi_users_map :
-                showFragment(usersMapFragment, chatRoomFragment, usersListFragment, editProfileFragment);
+            case R.id.mi_users_map:
+                showMap(supportMapFragment, chatRoomFragment, usersListFragment, editProfileFragment);
                 break;
-            case R.id.mi_users_in_chat :
-                showFragment(usersListFragment, usersMapFragment, chatRoomFragment, editProfileFragment);
+            case R.id.mi_users_in_chat:
+                showFragment(usersListFragment, supportMapFragment, chatRoomFragment, editProfileFragment);
                 break;
-            case R.id.mi_edit_profile :
-                showFragment(editProfileFragment, usersMapFragment, usersListFragment, chatRoomFragment);
+            case R.id.mi_edit_profile:
+                showFragment(editProfileFragment, supportMapFragment, usersListFragment, chatRoomFragment);
                 break;
-            case R.id.mi_notifications :
+            case R.id.mi_notifications:
                 Utils.showSnackBar(binding.getRoot(), "Notification  clicked");
                 break;
-            case R.id.mi_log_out :
+            case R.id.mi_log_out:
                 Utils.showSnackBar(binding.getRoot(), "Log out clicked");
                 break;
             default:
-                showFragment(chatRoomFragment, usersMapFragment, usersListFragment, editProfileFragment);
+                showFragment(chatRoomFragment, supportMapFragment, usersListFragment, editProfileFragment);
         }
         getSupportActionBar().setTitle(item.getTitle());
         drawerLayout.closeDrawers();
@@ -177,5 +205,99 @@ public class MainActivity extends AppCompatActivity {
         if (hide2.isAdded()) ft.hide(hide2);
         if (hide3.isAdded()) ft.hide(hide3);
         ft.commit();
+    }
+
+    //    called when the map is ready to be used
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        Log.d(TAG, "onMapReady called!");
+        if (googleMap != null) {
+            this.googleMap = googleMap;
+            setupMap(googleMap);
+        } else {
+            Log.d(TAG, "google map is null!");
+        }
+    }
+
+    private void showMap(SupportMapFragment show, Fragment hide1, Fragment hide2, Fragment hide3) {
+        // start the fragment
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        if (show.isAdded()) {
+            ft.show(show);
+        } else {
+            ft.add(R.id.flContainer, show, show.getTag());
+        }
+        if (hide1.isAdded()) ft.hide(hide1);
+        if (hide2.isAdded()) ft.hide(hide2);
+        if (hide3.isAdded()) ft.hide(hide3);
+        ft.commit();
+        // setup the callback
+        if (show != null) {
+            show.getMapAsync(this);
+        } else {
+            Toast.makeText(this, "Error - Map Fragment was null!!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void setupMap(GoogleMap googleMap) {
+        Log.d(TAG, "setupGoogleMap called");
+        askPermissionUserLocation();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void askPermissionUserLocation() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                        shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    // TODO: explanation on why we need the access current location permission
+
+                }
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_CODE_LOCATION);
+        } else {
+            getUserCurrentLocation();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CODE_LOCATION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "permission granted");
+                getUserCurrentLocation();
+            } else {
+                Log.d(TAG, "permission denied");
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getUserCurrentLocation() {
+        googleMap.setMyLocationEnabled(true);
+        // this client is the main entry point for interaction with the fused location provider(location API in Google Play)
+        FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
+        locationClient.getLastLocation()
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+//                        add pin here...?
+                        Log.d(TAG, "lat: " + location.getLatitude() + "\tlong:" + location.getLongitude());
+                        BitmapDescriptor icon = MapUtils.createBubble(MainActivity.this, IconGenerator.STYLE_ORANGE, "You are here");
+                        MapUtils.addMarker(googleMap, new LatLng(location.getLatitude(), location.getLongitude()),icon);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
     }
 }

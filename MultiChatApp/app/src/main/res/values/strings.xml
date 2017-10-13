@@ -16,4 +16,6 @@
     <string name="log_out">Log out</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <!--add your google maps key here-->
+    <string name="google_maps_key"></string>
 </resources>
