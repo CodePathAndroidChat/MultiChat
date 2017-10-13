@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.jason.multichatapp.R;
+import com.example.jason.multichatapp.Utils.Utils;
 import com.example.jason.multichatapp.databinding.FragmentSignUpBinding;
 
 /**
@@ -73,8 +75,12 @@ public class SignUpFragment extends Fragment {
                 hideKeyBoard(view);
                 String email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
-                Log.d(LOG_TAG, "email: " + email + "\tpassword: " + password);
-                signUpListener.onSignUpClick(email, password);
+                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+                    Utils.showSnackBar(binding.getRoot(), "Field cannot be empty");
+                } else {
+                    Log.d(LOG_TAG, "email: " + email + "\tpassword: " + password);
+                    signUpListener.onSignUpClick(email, password);
+                }
             }
         });
 

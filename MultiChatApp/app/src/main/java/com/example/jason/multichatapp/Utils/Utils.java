@@ -1,4 +1,4 @@
-package com.example.jason.multichatapp;
+package com.example.jason.multichatapp.Utils;
 
 import android.support.design.widget.Snackbar;
 import android.view.View;

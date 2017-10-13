@@ -10,7 +10,7 @@ import android.util.Log;
 
 import com.example.jason.multichatapp.Constants;
 import com.example.jason.multichatapp.R;
-import com.example.jason.multichatapp.Utils;
+import com.example.jason.multichatapp.Utils.Utils;
 import com.example.jason.multichatapp.adapters.LoginFragmentPagerAdapter;
 import com.example.jason.multichatapp.databinding.ActivityLoginBinding;
 import com.example.jason.multichatapp.fragments.LoginFragment;
