@@ -1,39 +1,31 @@
 package com.example.jason.multichatapp.fragments;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.Utils.Utils;
-import com.example.jason.multichatapp.databinding.FragmentSignUpBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * SignUpFragment- Sign up to the world app
  */
 
-public class SignUpFragment extends Fragment {
+public class SignUpFragment extends UserProfileFragment {
     private static final String LOG_TAG = SignUpFragment.class.getSimpleName();
-    private OnSignUpClickListener signUpListener;
-    public interface OnSignUpClickListener {
-        void onSignUpClick(String email, String password);
+    private OnSignUpSuccessListener signUpSuccessListener;
+
+    public interface OnSignUpSuccessListener {
+        void onSignUpSuccess();
     }
-
-    private FragmentSignUpBinding binding;
-    private EditText etEmail;
-    private EditText etPassword;
-    private Button btSignUp;
-
     public static SignUpFragment newInstance() {
         Bundle args = new Bundle();
         SignUpFragment fragment = new SignUpFragment();
@@ -41,55 +33,46 @@ public class SignUpFragment extends Fragment {
         return fragment;
     }
 
+    private FirebaseAuth mAuth;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnSignUpClickListener) {
-            signUpListener = (OnSignUpClickListener) context;
+        if (context instanceof OnSignUpSuccessListener) {
+            signUpSuccessListener = (OnSignUpSuccessListener) context;
         } else {
             throw new ClassCastException(context.toString() + "must implement "
-                    + OnSignUpClickListener.class.getSimpleName());
+                    + OnSignUpSuccessListener.class.getSimpleName());
         }
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_sign_up, container, false);
-        return binding.getRoot();
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        setupView();
+    public void changeWidgetConfig(EditText etEmail, EditText etPassword, Button btnProfile) {
+        btnProfile.setText(getResources().getString(R.string.sign_up));
     }
 
-    private void setupView(){
-        etEmail = binding.etEmail;
-        etPassword = binding.etPwd;
-        btSignUp = binding.btSignUp;
-        btSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hideKeyBoard(view);
-                String email = etEmail.getText().toString();
-                String password = etPassword.getText().toString();
-                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-                    Utils.showSnackBar(binding.getRoot(), "Field cannot be empty");
-                } else {
-                    Log.d(LOG_TAG, "email: " + email + "\tpassword: " + password);
-                    signUpListener.onSignUpClick(email, password);
-                }
-            }
-        });
-
+    @Override
+    public void setupUserInformation(String email, String password) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // go to activity and activity will navigate to main activity
+                            Log.d(LOG_TAG, "sign up success");
+                            signUpSuccessListener.onSignUpSuccess();
+                        } else {
+                            Log.d(LOG_TAG, "createUserWithEmailAndPassword:failure" + task.getException().getMessage());
+                            Utils.showSnackBar(getView(), "Unable to login: " + task.getException().getMessage());
+                        }
+                    }
+                });
     }
 
-    private void hideKeyBoard(View view) {
-        // close keyboard so user can see snackbar. getSystemService will return the system-level service which in this case input manager for interacting with input devices
-        InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        // no additional operation flag so the second argument is zero
-        inputManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
 }
