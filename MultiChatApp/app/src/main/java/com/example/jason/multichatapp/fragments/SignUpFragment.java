@@ -10,10 +10,14 @@ import android.widget.EditText;
 
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.Utils.Utils;
+import com.example.jason.multichatapp.models.PublicUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * SignUpFragment- Sign up to the world app
@@ -22,6 +26,8 @@ import com.google.firebase.auth.FirebaseAuth;
 public class SignUpFragment extends UserProfileFragment {
     private static final String LOG_TAG = SignUpFragment.class.getSimpleName();
     private OnSignUpSuccessListener signUpSuccessListener;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference publicUsersReference;
 
     public interface OnSignUpSuccessListener {
         void onSignUpSuccess();
@@ -50,6 +56,8 @@ public class SignUpFragment extends UserProfileFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
+        publicUsersReference = mDatabase.getReference("publicUsers");
     }
 
     @Override
@@ -67,6 +75,20 @@ public class SignUpFragment extends UserProfileFragment {
                             // go to activity and activity will navigate to main activity
                             Log.d(LOG_TAG, "sign up success");
                             signUpSuccessListener.onSignUpSuccess();
+
+                            FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
+                            Log.d(LOG_TAG, "user id?: " + currentFirebaseUser.getUid());
+
+                            /////////////////
+                            // currentFirebaseUser.getDisplayName()
+                            // Change!!!:
+                            publicUsersReference.push().setValue(new PublicUser(
+                                    currentFirebaseUser.getEmail()
+                                    , "en"
+                                    , "USA"
+                            ));
+                            Log.d(LOG_TAG, "public user created");
+
                         } else {
                             Log.d(LOG_TAG, "createUserWithEmailAndPassword:failure" + task.getException().getMessage());
                             Utils.showSnackBar(getView(), "Unable to login: " + task.getException().getMessage());
