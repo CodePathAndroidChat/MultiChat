@@ -83,7 +83,8 @@ public class SignUpFragment extends UserProfileFragment {
                             // currentFirebaseUser.getDisplayName()
                             // Change!!!:
                             publicUsersReference.push().setValue(new PublicUser(
-                                    currentFirebaseUser.getEmail()
+                                       currentFirebaseUser.getUid()
+                                    ,  currentFirebaseUser.getEmail()
                                     , "en"
                                     , "USA"
                             ));

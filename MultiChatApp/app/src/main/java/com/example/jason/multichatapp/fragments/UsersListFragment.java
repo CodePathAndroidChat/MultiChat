@@ -14,10 +14,16 @@ import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.Utils.Utils;
 import com.example.jason.multichatapp.adapters.UserListsAdapter;
 import com.example.jason.multichatapp.databinding.FragmentUsersListBinding;
-import com.example.jason.multichatapp.models.User;
+import com.example.jason.multichatapp.models.PublicUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * UsersListFragment-
@@ -25,9 +31,11 @@ import java.util.List;
 
 public class UsersListFragment extends Fragment implements
         UserListsAdapter.OnDirectMsgArrowClick {
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference publicUsersReference;
 
     private FragmentUsersListBinding binding;
-    private List<User> users;
+    private List<PublicUser> users;
     private UserListsAdapter adapter;
     private RecyclerView rvUsersList;
 
@@ -42,6 +50,8 @@ public class UsersListFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_users_list, container, false);
+        mDatabase = FirebaseDatabase.getInstance();
+        publicUsersReference = mDatabase.getReference("publicUsers");
         return binding.getRoot();
     }
 
@@ -52,27 +62,37 @@ public class UsersListFragment extends Fragment implements
 
     @Override
     public void onDirectMsgClick(View view, int position) {
-        Utils.showSnackBar(view, users.get(position).name + " clicked");
+        Utils.showSnackBar(view, users.get(position).email + " clicked");
     }
 
     private void setupView() {
         // add some fake user data for now
-        users = addFewFakeUser(10);
+        users = new ArrayList<PublicUser>();
         adapter = new UserListsAdapter(getContext(), users);
         adapter.setOnDirectMsgArrowClick(this);
         rvUsersList = binding.rvUsersList;
         rvUsersList.setAdapter(adapter);
         rvUsersList.setLayoutManager(new LinearLayoutManager(getContext()));
+        getUsers();
     }
 
-    private List<User> addFewFakeUser(int number) {
-        List<User> userList = new ArrayList<>();
-        for (int i = 0; i < number; i++) {
-            String name = "name" + i;
-            String language = "lang" + i;
-            String location = "location" + i;
-            userList.add(new User(name, language, location));
-        }
-        return userList;
+    private void getUsers() {
+        publicUsersReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    Map<String, String > message = (Map<String, String>) child.getValue();
+                    PublicUser user = new PublicUser().fromObject(message);
+                    users.add(user);
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
+
 }

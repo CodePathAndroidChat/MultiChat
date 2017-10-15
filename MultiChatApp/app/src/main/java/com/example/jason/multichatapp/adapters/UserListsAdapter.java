@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.jason.multichatapp.R;
-import com.example.jason.multichatapp.models.User;
+import com.example.jason.multichatapp.models.PublicUser;
 
 import java.util.List;
 
@@ -27,10 +27,10 @@ public class UserListsAdapter extends RecyclerView.Adapter<UserListsAdapter.View
         this.arrowClickListener = arrowClickListener;
     }
     // TODO: once user class is finalized, update this class to use data binding
-    private List<User> users;
+    private List<PublicUser> users;
     private Context context;
 
-    public UserListsAdapter(Context context, List<User> users) {
+    public UserListsAdapter(Context context, List<PublicUser> users) {
         this.context = context;
         this.users = users;
     }
@@ -44,7 +44,7 @@ public class UserListsAdapter extends RecyclerView.Adapter<UserListsAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        User user = users.get(position);
+        PublicUser user = users.get(position);
         holder.bind(user);
     }
 
@@ -71,8 +71,8 @@ public class UserListsAdapter extends RecyclerView.Adapter<UserListsAdapter.View
 
         }
 
-        public void bind(User user) {
-            tvName.setText(user.name);
+        public void bind(PublicUser user) {
+            tvName.setText(user.email);
             tvOriginalLanguage.setText(user.language);
             tvLocation.setText(user.location);
             ivMsgArrow.setOnClickListener(new View.OnClickListener() {
