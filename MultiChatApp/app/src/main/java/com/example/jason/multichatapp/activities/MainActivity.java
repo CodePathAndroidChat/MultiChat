@@ -185,6 +185,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
             case R.id.mi_log_out:
                 Utils.showSnackBar(binding.getRoot(), "Log out clicked");
+                FirebaseAuth.getInstance().signOut();
+                Intent i = new Intent(this, LoginActivity.class);
+                startActivity(i);
                 break;
             default:
                 showFragment(chatRoomFragment, supportMapFragment, usersListFragment, editProfileFragment);
