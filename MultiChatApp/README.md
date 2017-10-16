@@ -67,3 +67,14 @@ Files of the wireframe contains in app/main/src/v2
 
 <img src='https://i.imgur.com/x13ys3I.gif' title='Video Walkthrough' alt='Video Walkthrough' />
 
+## Week 5 Video Walkthrough
+
+* [Chat Screen](https://i.imgur.com/sP24CfY.gif)
+
+* [Log in](https://i.imgur.com/7uOaPsh.gif)
+
+
+* [Burger Menu](https://i.imgur.com/IqlSDPK.gif)
+
+
+* [Sign up](https://i.imgur.com/PQRiO96.gif)
