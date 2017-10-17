@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.databinding.FragmentChatRoomBinding;
 import com.example.jason.multichatapp.models.ChatMessage;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -141,26 +142,34 @@ public class ChatRoomFragment extends Fragment {
         });
     }
 
-    // listens and appends to list last message from Firebase
+    // listens and appends to list new message from Firebase
     private void getLastMessageFromDatabase() {
-        // ready from the database. To read data and listen for changes.
-        myRef.limitToLast(1).addValueEventListener(new ValueEventListener() {
+        myRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(LOG_TAG, "dataSnapshot:" + dataSnapshot);
-                for (DataSnapshot child: dataSnapshot.getChildren()) {
-                    Map<String, String > message = (Map<String, String>) child.getValue();
-                    ChatMessage chatMessage = new ChatMessage().fromObject(message);
-                    Log.d(LOG_TAG, "chatMessage" + chatMessage);
-                    chatMessagesList.add(chatMessage);
-                    tvMessages.append("\n" + chatMessage.getText()); //TODO remove hardcoded textview update
-                }
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d(LOG_TAG, "dataSnapshot: " + dataSnapshot.getValue());
+                Map<String, String> message = (Map<String, String>) dataSnapshot.getValue();
+                ChatMessage chatMessage = new ChatMessage().fromObject(message);
+                Log.d(LOG_TAG, "chatMessage: " + chatMessage);
+                chatMessagesList.add(chatMessage);
+                tvMessages.append("\n" + chatMessage.getText()); //TODO remove hardcoded textview update
+            }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.w(LOG_TAG, "Failed to read value.", databaseError.toException());
+
             }
         });
     }
-
 }
