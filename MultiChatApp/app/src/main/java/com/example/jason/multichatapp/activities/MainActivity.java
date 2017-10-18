@@ -45,7 +45,7 @@ import com.google.maps.android.ui.IconGenerator;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements UsersListFragment.LoadPrivateChatroomListener, OnMapReadyCallback {
 
     private final String TAG = "@@@";
     private FirebaseAuth mAuth;
@@ -165,7 +165,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 });
     }
-
+    // Implement class header --> interface for click listener for userListFragment
+    // go to direct messg fragment
     private void selectDrawerItem(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.mi_chat_room:
@@ -294,5 +295,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     }
                 });
+    }
+
+    @Override
+    public void onUserPMTapped(String loadPrivateChatRoom) {
+        Log.d(TAG, "load chatroom with" + loadPrivateChatRoom);
     }
 }
