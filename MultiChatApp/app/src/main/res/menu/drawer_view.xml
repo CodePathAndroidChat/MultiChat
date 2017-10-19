@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--every menu item is defined here by item tag-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <item
+            android:id="@+id/mi_chat_room"
+            android:title="@string/global_chat_room"/>
+        <item
+            android:id="@+id/mi_users_map"
+            android:title="@string/map_of_users"/>
+        <item
+            android:id="@+id/mi_users_in_chat"
+            android:title="@string/users_in_char"/>
+        <item
+            android:id="@+id/mi_edit_profile"
+            android:title="@string/edit_profile"/>
+        <item
+            android:id="@+id/mi_notifications"
+            android:title="@string/notifications"/>
+        <item
+            android:id="@+id/mi_log_out"
+            android:title="@string/log_out"/>
+    </group>
+</menu>

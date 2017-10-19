@@ -1,10 +1,24 @@
 <resources>
     <string name="app_name">MultiChatApp</string>
     <string name="email">Email</string>
-    <string name="password">Password</string>
     <string name="existing_user_login">Already have an account?</string>
-    <string name="sign_in">Sign In</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log In</string>
     <string name="sign_up">Sign Up</string>
     <string name="enter_your_message">Enter your message</string>
     <string name="send_button">Send</string>
+    <string name="welcome_to_world_chat">Welcome to World Chat</string>
+    <string name="global_chat_room">Global Chat Room</string>
+    <string name="map_of_users">Map of Users</string>
+    <string name="users_in_char">Users in Chat</string>
+    <string name="edit_profile">Edit Profile</string>r
+    <string name="notifications">Notifications</string>
+    <string name="log_out">Log out</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="save">Save</string>
+    <string name="authentication_text">Please enter current email and password to confirm your account</string>
+    <string name="ok">OK</string>
+    <!--add your google maps key here-->
+    <string name="google_maps_key"></string>
 </resources>

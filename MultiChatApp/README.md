@@ -14,15 +14,15 @@ Multi-language chat allows users who speak different languages to communicate.
 
 **required** 
 
-* [ ] App has sign up screen where user can edit the following information 
+* [ ] com.example.jason.multichatapp.App has sign up screen where user can edit the following information
  * [ ] Username
  * [ ] Password 
  * [ ] Choice of language that the user desire to recieve the chat massages 
  * [ ] Location of the user  
-* [ ] App has login screen where user can use his/her username and password to login to the app
+* [ ] com.example.jason.multichatapp.App has login screen where user can use his/her username and password to login to the app
 * [ ] User will see the "Global Chatroom" once the user login/sign up to the app
  * [ ] "Global Chatroom" is a group chat room where all the app user can participate.
-* [ ] App has burgure menu("Navigation menu") that contains "Global Chatroom", "Map of Users", "Edit Profile", "User in Chat" 
+* [ ] com.example.jason.multichatapp.App has burgure menu("Navigation menu") that contains "Global Chatroom", "Map of Users", "Edit Profile", "User in Chat"
  * [ ] "Map of Users" displays the map view of all the app users 
  * [ ] User can change his/her account setting at "Edit Profile" (same UI as sign up screen)
  * [ ] "User in Chat" displays list of users who are using the application 
@@ -36,13 +36,13 @@ Multi-language chat allows users who speak different languages to communicate.
   
 **optional**
 * [ ] User can view the chat history 
-* [ ] App supports offline mode. 
-* [ ] App supports localizations. Different country displays different languages. 
+* [ ] com.example.jason.multichatapp.App supports offline mode.
+* [ ] com.example.jason.multichatapp.App supports localizations. Different country displays different languages.
 * [ ] The Application (UI) and keyboard are in different langauges
 * [ ] User can share his/her location in the chat message 
 * [ ] User can add image/picture to the chat message
 * [ ] User can use voice recognition to type the message
-* [ ] App contains "Notification" page where user can view history of notifications
+* [ ] com.example.jason.multichatapp.App contains "Notification" page where user can view history of notifications
 * [ ] User can click the original language to lean how to pronunce the language in "Alternate Translation" screen 
 
 ## Open-source libraries used
@@ -67,3 +67,14 @@ Files of the wireframe contains in app/main/src/v2
 
 <img src='https://i.imgur.com/x13ys3I.gif' title='Video Walkthrough' alt='Video Walkthrough' />
 
+## Week 5 Video Walkthrough
+
+* [Chat Screen](https://i.imgur.com/sP24CfY.gif)
+
+* [Log in](https://i.imgur.com/7uOaPsh.gif)
+
+
+* [Burger Menu](https://i.imgur.com/IqlSDPK.gif)
+
+
+* [Sign up](https://i.imgur.com/PQRiO96.gif)

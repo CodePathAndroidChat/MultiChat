@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.adapters.MessagesAdapter;
+
 import com.example.jason.multichatapp.databinding.FragmentChatRoomBinding;
 import com.example.jason.multichatapp.models.ChatMessage;
 import com.google.firebase.database.ChildEventListener;
@@ -51,6 +53,7 @@ public class ChatRoomFragment extends Fragment {
     private TextView tvEmail;
     private EditText etMessages;
     private RecyclerView rvMessages;
+    private TextView tvMessages;
 
     private List<ChatMessage> chatMessagesList = new ArrayList<>();
 
@@ -74,7 +77,6 @@ public class ChatRoomFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat_room, container, false);
-
         rvMessages = binding.rvMessages;
 
         mAdapter = new MessagesAdapter(getContext(), chatMessagesList);
@@ -82,7 +84,6 @@ public class ChatRoomFragment extends Fragment {
         rvMessages.setAdapter(mAdapter);
         // Set layout manager to position the items
         rvMessages.setLayoutManager(new LinearLayoutManager(getActivity()));
-
         return binding.getRoot();
     }
 
