@@ -4,6 +4,9 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +16,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.jason.multichatapp.R;
+import com.example.jason.multichatapp.adapters.MessagesAdapter;
+
 import com.example.jason.multichatapp.databinding.FragmentChatRoomBinding;
 import com.example.jason.multichatapp.models.ChatMessage;
 import com.google.firebase.database.ChildEventListener;
@@ -38,6 +43,7 @@ public class ChatRoomFragment extends Fragment {
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference myRef;
+    private MessagesAdapter mAdapter;
 
     private String uid;
     private String email;
@@ -45,8 +51,9 @@ public class ChatRoomFragment extends Fragment {
     private FragmentChatRoomBinding binding;
     private Button btnSendMessage;
     private TextView tvEmail;
-    private TextView tvMessages;
     private EditText etMessages;
+    private RecyclerView rvMessages;
+    private TextView tvMessages;
 
     private List<ChatMessage> chatMessagesList = new ArrayList<>();
 
@@ -70,6 +77,13 @@ public class ChatRoomFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat_room, container, false);
+        rvMessages = binding.rvMessages;
+
+        mAdapter = new MessagesAdapter(getContext(), chatMessagesList);
+        // Attach the adapter to the recyclerview to items
+        rvMessages.setAdapter(mAdapter);
+        // Set layout manager to position the items
+        rvMessages.setLayoutManager(new LinearLayoutManager(getActivity()));
         return binding.getRoot();
     }
 
@@ -95,7 +109,6 @@ public class ChatRoomFragment extends Fragment {
     private void setupView() {
         btnSendMessage = binding.btnSendMessage;
         tvEmail = binding.tvUserName;
-        tvMessages = binding.tvMessages;
         etMessages = binding.etMessage;
     }
 
@@ -106,7 +119,7 @@ public class ChatRoomFragment extends Fragment {
                 // Write a message to the database
                 DatabaseReference myRef = mDatabase.getReference("message"); // every message now overrides previous one because of the lack of Model
                 myRef.push().setValue(new ChatMessage(
-                        new SimpleDateFormat("YYYY-MM-DD'T'HH:mm:ss'Z'").format(new Timestamp(System.currentTimeMillis())).toString(),
+                        new Timestamp(System.currentTimeMillis()).toString(),
                         binding.etMessage.getText().toString(),
                         uid,
                         "en"));
@@ -130,8 +143,9 @@ public class ChatRoomFragment extends Fragment {
                     ChatMessage chatMessage = new ChatMessage().fromObject(message);
                     Log.d(LOG_TAG, "chatMessage" + chatMessage);
                     chatMessagesList.add(chatMessage);
-                    tvMessages.append("\n" + chatMessage.getText()); //TODO remove hardcoded textview update
+                    mAdapter.notifyDataSetChanged();
                     //get data, update dataset and remove listener
+                    rvMessages.scrollToPosition(chatMessagesList.size() - 1);
                 }
                 myRef.removeEventListener(this);
             }
@@ -152,7 +166,7 @@ public class ChatRoomFragment extends Fragment {
                 ChatMessage chatMessage = new ChatMessage().fromObject(message);
                 Log.d(LOG_TAG, "chatMessage: " + chatMessage);
                 chatMessagesList.add(chatMessage);
-                tvMessages.append("\n" + chatMessage.getText()); //TODO remove hardcoded textview update
+                mAdapter.notifyItemInserted(chatMessagesList.size() - 1);
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {

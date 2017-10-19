@@ -74,6 +74,8 @@ dependencies {
     //for handling the runtime permission check
     compile 'com.github.hotchemi:permissionsdispatcher:2.4.0'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.4.0'
+    compile "com.android.support:recyclerview-v7:${supportLibVersion}"
+    compile 'org.ocpsoft.prettytime:prettytime:4.0.+'
 }
 
 apply plugin: 'com.google.gms.google-services'
