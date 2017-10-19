@@ -41,7 +41,7 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="API_KEY_HERE"/>
+            android:value="@string/fabric_api_key"/>
 
         <service android:name=".network.ChatAppFirebaseInstanceIdService">
             <intent-filter>
