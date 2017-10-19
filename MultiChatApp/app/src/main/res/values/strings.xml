@@ -17,6 +17,8 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="save">Save</string>
+    <string name="authentication_text">Please enter current email and password to confirm your account</string>
+    <string name="ok">OK</string>
     <!--add your google maps key here-->
     <string name="google_maps_key"></string>
 </resources>
