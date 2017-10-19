@@ -20,5 +20,8 @@
     <string name="authentication_text">Please enter current email and password to confirm your account</string>
     <string name="ok">OK</string>
     <!--add your google maps key here-->
-    <string name="google_maps_key"></string>
+    <string name="google_maps_key">YOUR_MAPS_KEY</string>
+    <string name="fabric_api_key">YOUR_FABRIC_KEY</string>
+
+
 </resources>
