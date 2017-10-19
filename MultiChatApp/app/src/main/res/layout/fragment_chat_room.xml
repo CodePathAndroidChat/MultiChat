@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:id="@+id/tvUserId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:id="@+id/tvUserName"
+            android:layout_below="@+id/tvUserId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvMessages"
+            android:layout_below="@+id/tvUserName"
+            android:layout_above="@+id/etMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <EditText
+            android:id="@+id/etMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_your_message"
+            android:layout_alignBaseline="@+id/btnSendMessage"
+            android:layout_alignBottom="@+id/btnSendMessage"
+            android:layout_toRightOf="@+id/btnSendMessage"
+            android:layout_toEndOf="@+id/btnSendMessage"/>
+
+        <Button
+            android:id="@+id/btnSendMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="@string/send_button"/>
+
+    </RelativeLayout>
+</layout>
