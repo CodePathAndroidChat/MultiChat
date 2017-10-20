@@ -32,6 +32,8 @@ import com.example.jason.multichatapp.fragments.ChatRoomFragment;
 import com.example.jason.multichatapp.fragments.EditProfileFragment;
 import com.example.jason.multichatapp.fragments.UsersListFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -287,6 +289,13 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
                         Log.d(TAG, "lat: " + location.getLatitude() + "\tlong:" + location.getLongitude());
                         BitmapDescriptor icon = MapUtils.createBubble(MainActivity.this, IconGenerator.STYLE_ORANGE, "You are here");
                         MapUtils.addMarker(googleMap, new LatLng(location.getLatitude(), location.getLongitude()),icon);
+                        CameraUpdate center=
+                            CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),
+                                location.getLongitude()));
+                        CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
+
+                        googleMap.moveCamera(center);
+                        googleMap.animateCamera(zoom);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
