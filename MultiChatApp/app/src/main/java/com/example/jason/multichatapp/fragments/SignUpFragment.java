@@ -1,12 +1,14 @@
 package com.example.jason.multichatapp.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.Utils.Utils;
@@ -15,7 +17,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -25,21 +26,23 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpFragment extends UserProfileFragment {
     private static final String LOG_TAG = SignUpFragment.class.getSimpleName();
+
     private OnSignUpSuccessListener signUpSuccessListener;
+    public interface OnSignUpSuccessListener {
+
+        void onSignUpSuccess();
+    }
+
+    private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private DatabaseReference publicUsersReference;
 
-    public interface OnSignUpSuccessListener {
-        void onSignUpSuccess();
-    }
     public static SignUpFragment newInstance() {
         Bundle args = new Bundle();
         SignUpFragment fragment = new SignUpFragment();
         fragment.setArguments(args);
         return fragment;
     }
-
-    private FirebaseAuth mAuth;
 
     @Override
     public void onAttach(Context context) {
@@ -61,12 +64,12 @@ public class SignUpFragment extends UserProfileFragment {
     }
 
     @Override
-    public void changeWidgetConfig(EditText etEmail, EditText etPassword, Button btnProfile) {
+    public void changeWidgetConfig(EditText etEmail, EditText etPassword, Button btnProfile, Spinner spLanguage) {
         btnProfile.setText(getResources().getString(R.string.sign_up));
     }
 
     @Override
-    public void setupUserInformation(String email, String password) {
+    public void setupUserInformation(final String email, String password, final String language) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
@@ -76,26 +79,34 @@ public class SignUpFragment extends UserProfileFragment {
                             Log.d(LOG_TAG, "sign up success");
                             signUpSuccessListener.onSignUpSuccess();
 
-                            FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
-                            Log.d(LOG_TAG, "user id?: " + currentFirebaseUser.getUid());
-
                             /////////////////
                             // currentFirebaseUser.getDisplayName()
                             // Change!!!:
-                            publicUsersReference.push().setValue(new PublicUser(
-                                       currentFirebaseUser.getUid()
-                                    ,  currentFirebaseUser.getEmail()
-                                    , "en"
-                                    , "USA"
-                            ));
-                            Log.d(LOG_TAG, "public user created");
+                            saveUserToDatabaseAndPref(email, language, "USA");
 
+                            Log.d(LOG_TAG, "public user created");
                         } else {
                             Log.d(LOG_TAG, "createUserWithEmailAndPassword:failure" + task.getException().getMessage());
-                            Utils.showSnackBar(getView(), "Unable to login: " + task.getException().getMessage());
+                            Utils.showSnackBar(getView(), "Unable to sign up: " + task.getException().getMessage());
                         }
                     }
                 });
+    }
+
+    private void saveUserToDatabaseAndPref(String email, String language, String location) {
+        // save the user information locally in shared preferences.
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(getString(R.string.user_info), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(getString(R.string.s_email), email);
+        editor.putString(getString(R.string.s_language), language);
+        editor.putString(getString(R.string.s_location), location);
+        editor.apply();
+        publicUsersReference.child(mAuth.getCurrentUser().getUid())
+                .setValue(new PublicUser(mAuth.getCurrentUser().getUid(),
+                        mAuth.getCurrentUser().getEmail(),
+                        Utils.getLanguageCode(language),
+                        "USA")
+        );
     }
 
 }

@@ -35,9 +35,7 @@ public class LoginFragment extends Fragment {
     private EditText etPassword;
 
     public static LoginFragment newInstance() {
-        
         Bundle args = new Bundle();
-        
         LoginFragment fragment = new LoginFragment();
         fragment.setArguments(args);
         return fragment;

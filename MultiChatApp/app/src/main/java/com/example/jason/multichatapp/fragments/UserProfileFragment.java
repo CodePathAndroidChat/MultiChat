@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.Utils.Utils;
@@ -29,6 +30,7 @@ public abstract class UserProfileFragment extends Fragment {
     private EditText etEmail;
     private EditText etPassword;
     private Button btnProfile;
+    private Spinner spLanguage;
 
     @Nullable
     @Override
@@ -43,18 +45,20 @@ public abstract class UserProfileFragment extends Fragment {
         etEmail = binding.etEmail;
         etPassword = binding.etPwd;
         btnProfile = binding.btnProfile;
-        changeWidgetConfig(etEmail, etPassword, btnProfile);
+        spLanguage = binding.spLanguage;
+        changeWidgetConfig(etEmail, etPassword, btnProfile, spLanguage);
         btnProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 hideKeyBoard(view);
                 String email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
+                String language = spLanguage.getSelectedItem().toString();
                 if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
                     Utils.showSnackBar(binding.getRoot(), "Field cannot be empty");
                 } else {
-                    Log.d(LOG_TAG, "email: " + email + "\tpassword: " + password);
-                    setupUserInformation(email, password);
+                    Log.d(LOG_TAG, "email: " + email + "\tpassword: " + password + "\tlang: " + language);
+                    setupUserInformation(email, password, language);
                 }
 
             }
@@ -72,7 +76,7 @@ public abstract class UserProfileFragment extends Fragment {
      * Abstract classes for subclass to use
      */
     // for changing the widget configurations
-    public abstract void changeWidgetConfig(EditText etEmail, EditText etPassword, Button btnProfile);
+    public abstract void changeWidgetConfig(EditText etEmail, EditText etPassword, Button btnProfile, Spinner spLanguage);
     // for creating/updating user information
-    public abstract void setupUserInformation(String email, String password);
+    public abstract void setupUserInformation(String email, String password, String language);
 }

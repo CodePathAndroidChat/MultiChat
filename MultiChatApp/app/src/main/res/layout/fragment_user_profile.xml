@@ -47,6 +47,7 @@
             android:layout_marginStart="42dp"
             android:layout_toEndOf="@+id/tvChatIn"
             android:layout_toRightOf="@+id/tvChatIn"
+            android:entries="@array/language_array"
             android:minWidth="200dp" />
 
         <ImageView
