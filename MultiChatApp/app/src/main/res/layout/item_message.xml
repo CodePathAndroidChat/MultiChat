@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    xmlns:tools="http://schemas.android.com/tools"
+                                    android:id="@+id/cardView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="@dimen/item_margin"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:foreground="?android:attr/selectableItemBackground"
+                                    app:cardCornerRadius="@dimen/item_margin"
+                                    app:cardElevation="@dimen/item_margin">
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:id="@+id/rlMessage"
     android:layout_margin="@dimen/item_margin"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
@@ -33,3 +44,5 @@
         tools:text="Message"/>
 
 </RelativeLayout>
+
+</android.support.v7.widget.CardView>

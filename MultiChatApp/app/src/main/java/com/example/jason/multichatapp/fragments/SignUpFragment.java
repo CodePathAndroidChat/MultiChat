@@ -20,6 +20,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Locale;
+
 /**
  * SignUpFragment- Sign up to the world app
  */
@@ -82,7 +84,7 @@ public class SignUpFragment extends UserProfileFragment {
                             /////////////////
                             // currentFirebaseUser.getDisplayName()
                             // Change!!!:
-                            saveUserToDatabaseAndPref(email, language, "USA");
+                            saveUserToDatabaseAndPref(email, language, Locale.getDefault().getCountry());
 
                             Log.d(LOG_TAG, "public user created");
                         } else {
@@ -100,12 +102,13 @@ public class SignUpFragment extends UserProfileFragment {
         editor.putString(getString(R.string.s_email), email);
         editor.putString(getString(R.string.s_language), language);
         editor.putString(getString(R.string.s_location), location);
+        editor.putString(getString(R.string.s_uid), mAuth.getCurrentUser().getUid());
         editor.apply();
         publicUsersReference.child(mAuth.getCurrentUser().getUid())
                 .setValue(new PublicUser(mAuth.getCurrentUser().getUid(),
                         mAuth.getCurrentUser().getEmail(),
                         Utils.getLanguageCode(language),
-                        "USA")
+                        Locale.getDefault().getCountry())
         );
     }
 
