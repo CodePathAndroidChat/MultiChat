@@ -28,9 +28,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -50,7 +50,6 @@ public class ChatRoomFragment extends Fragment {
 
     private FragmentChatRoomBinding binding;
     private Button btnSendMessage;
-    private TextView tvEmail;
     private EditText etMessages;
     private RecyclerView rvMessages;
     private TextView tvMessages;
@@ -98,7 +97,7 @@ public class ChatRoomFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        showUserInfo();
+        setOnClickListener();
     }
     // for activity call. get email and uid from activity::onstart
     public void getUserInfo(String email, String uid) {
@@ -108,11 +107,10 @@ public class ChatRoomFragment extends Fragment {
 
     private void setupView() {
         btnSendMessage = binding.btnSendMessage;
-        tvEmail = binding.tvUserName;
         etMessages = binding.etMessage;
     }
 
-    private void showUserInfo() {
+    private void setOnClickListener() {
         btnSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,14 +120,11 @@ public class ChatRoomFragment extends Fragment {
                         new Timestamp(System.currentTimeMillis()).toString(),
                         binding.etMessage.getText().toString(),
                         uid,
-                        "en"));
+                        Locale.getDefault().getLanguage()));
                 Log.d(LOG_TAG, "Sending message to Firebase Database: " + binding.etMessage.getText().toString());
-
                 etMessages.setText("");
-
             }
         });
-        tvEmail.setText(email);
     }
 
     // returns all messages from Firebase
@@ -158,7 +153,7 @@ public class ChatRoomFragment extends Fragment {
 
     // listens and appends to list new message from Firebase
     private void getLastMessageFromDatabase() {
-        myRef.addChildEventListener(new ChildEventListener() {
+        myRef.limitToLast(1).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(LOG_TAG, "dataSnapshot: " + dataSnapshot.getValue());

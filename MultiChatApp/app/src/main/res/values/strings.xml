@@ -22,10 +22,9 @@
     <string name="user_info">user information</string>
     <string name="s_language">language</string>
     <string name="s_location">location</string>
+    <string name="s_uid">uid</string>
     <string name="s_email">email</string>
     <!--add your google maps key here-->
     <string name="google_maps_key">YOUR_MAPS_KEY</string>
     <string name="fabric_api_key">YOUR_FABRIC_KEY</string>
-
-
 </resources>
