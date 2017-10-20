@@ -120,7 +120,11 @@ public class ChatRoomFragment extends Fragment {
                         new Timestamp(System.currentTimeMillis()).toString(),
                         binding.etMessage.getText().toString(),
                         uid,
-                        Locale.getDefault().getLanguage()));
+                        Locale.getDefault().getLanguage(),
+                        null,
+                        null,
+                        null,
+                        null));
                 Log.d(LOG_TAG, "Sending message to Firebase Database: " + binding.etMessage.getText().toString());
                 etMessages.setText("");
             }
@@ -162,6 +166,7 @@ public class ChatRoomFragment extends Fragment {
                 Log.d(LOG_TAG, "chatMessage: " + chatMessage);
                 chatMessagesList.add(chatMessage);
                 mAdapter.notifyItemInserted(chatMessagesList.size() - 1);
+                rvMessages.scrollToPosition(chatMessagesList.size() - 1);
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {

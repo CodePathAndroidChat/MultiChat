@@ -3,6 +3,7 @@ package com.example.jason.multichatapp.adapters;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.Utils.DateTimeUtils;
+import com.example.jason.multichatapp.Utils.Utils;
 import com.example.jason.multichatapp.models.ChatMessage;
 
 import java.util.List;
@@ -74,12 +76,17 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, int position) {
         // Get the data model based on position
         ChatMessage message = mChatMessages.get(position);
-
         String userId = message.getName();
 
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("user information", Context.MODE_PRIVATE);
         String email = sharedPreferences.getString("email", null);
         String uid = sharedPreferences.getString("uid", null);
+        String language = sharedPreferences.getString("language", "English");
+
+        String messageToDisplay = message.getTextByLanguage(Utils.getLanguageCode(language));
+        if (messageToDisplay == null) {
+            messageToDisplay = message.getText();
+        }
         if (uid != null && uid.equals(message.getName())) {
             userId = email;
             holder.rlMessage.setVisibility(View.INVISIBLE);
@@ -87,7 +94,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             holder.rlMessage.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT); // TODO set gravity to RIGHT
             // Set item views based on your views and data model
             TextView myTextView = mViewHolder.tvMyMessage;
-            myTextView.setText(message.getText());
+            myTextView.setText(messageToDisplay);
             TextView myUserName = mViewHolder.tvMyUserName;
             myUserName.setText(userId);
             TextView myTime = mViewHolder.tvMyTimeAgo;
@@ -99,14 +106,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             holder.rlMessage.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
             // Set item views based on your views and data model
             TextView textView = mViewHolder.tvMessage;
-            textView.setText(message.getText());
+            textView.setText(messageToDisplay);
             TextView userName = mViewHolder.tvUserName;
             userName.setText(userId);
             TextView time = mViewHolder.tvTimeAgo;
             time.setText(new DateTimeUtils().getRelativeTimeAgo(message.getTimestamp()));
         }
-
-
     }
 
     @Override
