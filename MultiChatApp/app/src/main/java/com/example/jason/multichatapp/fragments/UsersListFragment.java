@@ -31,6 +31,7 @@ import java.util.Map;
 
 public class UsersListFragment extends Fragment implements
         UserListsAdapter.OnDirectMsgArrowClick {
+    private static final String LOG_TAG = UsersListFragment.class.getSimpleName();
     private FirebaseDatabase mDatabase;
     private DatabaseReference publicUsersReference;
 
@@ -102,7 +103,7 @@ public class UsersListFragment extends Fragment implements
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d(LOG_TAG, databaseError.getMessage());
             }
         });
     }
