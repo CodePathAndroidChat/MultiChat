@@ -5,7 +5,7 @@ import java.util.Map;
 public class ChatMessage {
 
     private final String LANGUAGE_EN = "en";
-    private final String LANGUAGE_JP = "jp";
+    private final String LANGUAGE_JP = "ja";
     private final String LANGUAGE_RU = "ru";
     private final String LANGUAGE_ES = "es";
     private final String FIELD_TIMESTAMP = "timestamp";

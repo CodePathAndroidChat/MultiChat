@@ -24,5 +24,4 @@
     <string name="s_location">location</string>
     <string name="s_uid">uid</string>
     <string name="s_email">email</string>
-    <!--add your google maps key here-->
 </resources>
