@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
         toolbar = (Toolbar) binding.toolbar;
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.global_chat_room);
-        showFragment(chatRoomFragment, usersListFragment, usersListFragment, editProfileFragment);
+        showFragment(chatRoomFragment, new Fragment[]{usersListFragment, usersListFragment, editProfileFragment, directMessageFragment});
         drawerLayout = binding.drawerLayout;
         nvList = binding.nvList;
         // ActionBarDrawerToggle indicates to the user when a drawer is being open/closed
@@ -175,16 +175,16 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
     private void selectDrawerItem(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.mi_chat_room:
-                showFragment(chatRoomFragment, supportMapFragment, usersListFragment, editProfileFragment);
+                showFragment(chatRoomFragment, new Fragment[]{supportMapFragment, usersListFragment, editProfileFragment, directMessageFragment});
                 break;
             case R.id.mi_users_map:
-                showMapFragment(supportMapFragment, chatRoomFragment, usersListFragment, editProfileFragment);
+                showMapFragment(supportMapFragment, new Fragment[]{chatRoomFragment, usersListFragment, editProfileFragment});
                 break;
             case R.id.mi_users_in_chat:
-                showFragment(usersListFragment, supportMapFragment, chatRoomFragment, editProfileFragment);
+                showFragment(usersListFragment, new Fragment[]{directMessageFragment, supportMapFragment, chatRoomFragment, editProfileFragment});
                 break;
             case R.id.mi_edit_profile:
-                showFragment(editProfileFragment, supportMapFragment, usersListFragment, chatRoomFragment);
+                showFragment(editProfileFragment, new Fragment[]{directMessageFragment, supportMapFragment, usersListFragment, chatRoomFragment});
                 break;
             case R.id.mi_notifications:
                 Utils.showSnackBar(binding.getRoot(), "Notification  clicked");
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
                 startActivity(i);
                 break;
             default:
-                showFragment(chatRoomFragment, supportMapFragment, usersListFragment, editProfileFragment);
+                showFragment(chatRoomFragment, new Fragment[]{directMessageFragment, supportMapFragment, usersListFragment, editProfileFragment});
         }
         // set the title of the action bar based on the page user is opening
         getSupportActionBar().setTitle(item.getTitle());
@@ -204,21 +204,21 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
         drawerLayout.closeDrawers();
     }
 
-    private void showFragment(Fragment show, Fragment hide1, Fragment hide2, Fragment hide3) {
+    private void showFragment(Fragment show, Fragment[] elementsToHide) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if (show.isAdded()) {
             ft.show(show);
         } else {
             ft.add(R.id.flContainer, show, show.getTag());
         }
-        if (hide1.isAdded()) ft.hide(hide1);
-        if (hide2.isAdded()) ft.hide(hide2);
-        if (hide3.isAdded()) ft.hide(hide3);
+        for(Fragment hideMe: elementsToHide) {
+            if (hideMe.isAdded()) ft.hide(hideMe);
+        }
         ft.commit();
     }
 
-    private void showMapFragment(SupportMapFragment show, Fragment hide1, Fragment hide2, Fragment hide3) {
-        showFragment(show, hide1, hide2, hide3);
+    private void showMapFragment(SupportMapFragment show, Fragment[] elementsToHide) {
+        showFragment(show, elementsToHide);
         // Unique feature for map fragment. setup the callback
         if (show != null) {
             show.getMapAsync(this);
@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
     @Override
     public void onUserPMTapped(String loadPrivateChatRoom) {
         Log.d(TAG, "load chatroom with " + loadPrivateChatRoom);
-        showFragment(directMessageFragment);
+        showFragment(directMessageFragment, new Fragment[]{supportMapFragment, usersListFragment, editProfileFragment, chatRoomFragment});
 
     }
 }
