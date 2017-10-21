@@ -56,10 +56,12 @@ public class ChatRoomFragment extends Fragment {
 
     private List<ChatMessage> chatMessagesList = new ArrayList<>();
 
-    private String dbName = "message";
+//    private String dbName = "message";
     public static ChatRoomFragment newInstance() {
 
         Bundle args = new Bundle();
+        args.putString("dbName", "message_jason_test");
+
 
         ChatRoomFragment fragment = new ChatRoomFragment();
         fragment.setArguments(args);
@@ -70,6 +72,7 @@ public class ChatRoomFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDatabase = FirebaseDatabase.getInstance();
+        String dbName = getArguments().getString("dbName");
         Log.d(LOG_TAG, dbName);
         myRef = mDatabase.getReference(dbName);
     }
