@@ -26,6 +26,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -38,8 +46,9 @@ import java.util.Map;
  */
 
 public class ChatRoomFragment extends Fragment {
-
     private static final String LOG_TAG = ChatRoomFragment.class.getSimpleName();
+
+    private final String URL = "https://translation.googleapis.com/language/translate/v2";
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference myRef;
@@ -116,21 +125,46 @@ public class ChatRoomFragment extends Fragment {
         btnSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Write a message to the database
-                DatabaseReference myRef = mDatabase.getReference("message"); // every message now overrides previous one because of the lack of Model
-                myRef.push().setValue(new ChatMessage(
-                        new Timestamp(System.currentTimeMillis()).toString(),
-                        binding.etMessage.getText().toString(),
-                        uid,
-                        Locale.getDefault().getLanguage(),
-                        null,
-                        null,
-                        null,
-                        null));
-                Log.d(LOG_TAG, "Sending message to Firebase Database: " + binding.etMessage.getText().toString());
-                etMessages.setText("");
+                String originalMessage = binding.etMessage.getText().toString();
+                // Translate message to English if not in English
+                if (!Locale.getDefault().getLanguage().equals("en")) {
+                    Log.d(LOG_TAG, "Translating nonEnglish string before saving to Firebase");
+                    getTranslationToEnglish(originalMessage);
+                } else {
+                    saveMessageToFirebase(originalMessage, originalMessage);
+                }
             }
         });
+    }
+
+    private void saveMessageToFirebase(String originalMessage, String englishMessage) {
+        // Write a message to the database
+        String esMessage = null;
+        String ruMessage = null;
+        String jaMessage = null;
+        switch (Locale.getDefault().getLanguage()) {
+            case "ru":
+                ruMessage = originalMessage;
+                break;
+            case "es":
+                esMessage = originalMessage;
+                break;
+            case "jp":
+                jaMessage = originalMessage;
+                break;
+        }
+        DatabaseReference myRef = mDatabase.getReference("message");
+        myRef.push().setValue(new ChatMessage(
+            new Timestamp(System.currentTimeMillis()).toString(),
+            originalMessage,
+            uid,
+            Locale.getDefault().getLanguage(),
+            englishMessage,
+            esMessage,
+            ruMessage,
+            jaMessage));
+        Log.d(LOG_TAG, "Sending message to Firebase Database: " + binding.etMessage.getText().toString());
+        etMessages.setText("");
     }
 
     // returns all messages from Firebase
@@ -185,6 +219,31 @@ public class ChatRoomFragment extends Fragment {
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+    }
+
+    public void getTranslationToEnglish(final String messageToTranslate) {
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams params = new RequestParams();
+        params.put("key", getString(R.string.translate_key));
+        params.put("q", messageToTranslate);
+        params.put("target", "en");
+        Log.d(LOG_TAG, "Translating " + messageToTranslate + " before sending to Firebase");
+        client.post(URL, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d(LOG_TAG, "Google translation " + response);
+                try {
+                    JSONObject getResponse = (JSONObject) response.getJSONObject("data")
+                        .getJSONArray("translations")
+                        .get(0);
+                    String translation = getResponse.get("translatedText").toString();
+                    saveMessageToFirebase(messageToTranslate, translation);
+                } catch (JSONException e) {
+                    Log.d(LOG_TAG, e.toString());
+                    saveMessageToFirebase(messageToTranslate, null);
+                }
             }
         });
     }
