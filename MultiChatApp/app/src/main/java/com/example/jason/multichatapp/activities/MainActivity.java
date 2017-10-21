@@ -29,6 +29,7 @@ import com.example.jason.multichatapp.Utils.MapUtils;
 import com.example.jason.multichatapp.Utils.Utils;
 import com.example.jason.multichatapp.databinding.ActivityMainBinding;
 import com.example.jason.multichatapp.fragments.ChatRoomFragment;
+import com.example.jason.multichatapp.fragments.DirectMessageFragment;
 import com.example.jason.multichatapp.fragments.EditProfileFragment;
 import com.example.jason.multichatapp.fragments.UsersListFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
     private ActionBarDrawerToggle drawerToggle;
     private NavigationView nvList;
     private ChatRoomFragment chatRoomFragment;
+    private DirectMessageFragment directMessageFragment;
     private UsersListFragment usersListFragment;
     private EditProfileFragment editProfileFragment;
     private SupportMapFragment supportMapFragment;
@@ -137,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
         if (savedInstanceState == null) {
             // if this is the first time opening this activity, initialize all the fragment
             chatRoomFragment = ChatRoomFragment.newInstance();
+            directMessageFragment = DirectMessageFragment.newInstance();
             supportMapFragment = SupportMapFragment.newInstance();
             usersListFragment = UsersListFragment.newInstance();
             editProfileFragment = EditProfileFragment.newInstance();
@@ -308,6 +311,8 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
 
     @Override
     public void onUserPMTapped(String loadPrivateChatRoom) {
-        Log.d(TAG, "load chatroom with" + loadPrivateChatRoom);
+        Log.d(TAG, "load chatroom with " + loadPrivateChatRoom);
+        showFragment(directMessageFragment);
+
     }
 }
