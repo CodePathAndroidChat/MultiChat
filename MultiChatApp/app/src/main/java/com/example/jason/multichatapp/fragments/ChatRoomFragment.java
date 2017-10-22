@@ -9,11 +9,13 @@ import android.support.v7.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.adapters.MessagesAdapter;
@@ -45,7 +47,7 @@ import java.util.Map;
  * ChatRoomFragment-
  */
 
-public class ChatRoomFragment extends Fragment {
+public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemClickListener {
     private static final String LOG_TAG = ChatRoomFragment.class.getSimpleName();
 
     private final String URL = "https://translation.googleapis.com/language/translate/v2";
@@ -89,7 +91,7 @@ public class ChatRoomFragment extends Fragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat_room, container, false);
         rvMessages = binding.rvMessages;
 
-        mAdapter = new MessagesAdapter(getContext(), chatMessagesList);
+        mAdapter = new MessagesAdapter(getContext(), chatMessagesList, this);
         // Attach the adapter to the recyclerview to items
         rvMessages.setAdapter(mAdapter);
         // Set layout manager to position the items
@@ -246,5 +248,10 @@ public class ChatRoomFragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onItemClicked(View v, ChatMessage message) {
+        // add click logic here if necessary
     }
 }
