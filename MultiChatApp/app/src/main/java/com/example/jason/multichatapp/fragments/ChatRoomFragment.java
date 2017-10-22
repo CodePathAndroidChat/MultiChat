@@ -185,12 +185,14 @@ public class ChatRoomFragment extends Fragment {
                     Log.d(LOG_TAG, "room " + roomName);
                     Log.d(LOG_TAG, "----------------------");
 
-
-                    if(chatMessage.getRoom() == roomName) {
+                    if(roomName.equals(chatMessage.getRoom())) {
                         chatMessagesList.add(chatMessage);
                         mAdapter.notifyDataSetChanged();
                         //get data, update dataset and remove listener
                         rvMessages.scrollToPosition(chatMessagesList.size() - 1);
+                    } else {
+//                        Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
+
                     }
                                  }
                 myRef.removeEventListener(this);
@@ -204,7 +206,7 @@ public class ChatRoomFragment extends Fragment {
 
     // listens and appends to list new message from Firebase
     private void getLastMessageFromDatabase() {
-        myRef.limitToLast(1000
+        myRef.limitToLast(100
         ).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -215,10 +217,13 @@ public class ChatRoomFragment extends Fragment {
                 Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
                 Log.d(LOG_TAG, "chatMessage: text " + chatMessage.getText());
 
-                if(chatMessage.getRoom() == roomName) {
+                if(roomName.equals(chatMessage.getRoom())) {
                     chatMessagesList.add(chatMessage);
                     mAdapter.notifyItemInserted(chatMessagesList.size() - 1);
                     rvMessages.scrollToPosition(chatMessagesList.size() - 1);
+                } else {
+//                    Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
+
                 }
             }
             @Override
