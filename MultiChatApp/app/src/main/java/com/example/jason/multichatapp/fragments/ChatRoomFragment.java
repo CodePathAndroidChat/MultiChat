@@ -68,7 +68,7 @@ public class ChatRoomFragment extends Fragment {
     public static ChatRoomFragment newInstance() {
 
         Bundle args = new Bundle();
-
+        args.putString("roomName", "globalRoom");
         ChatRoomFragment fragment = new ChatRoomFragment();
         fragment.setArguments(args);
         return fragment;
@@ -77,6 +77,8 @@ public class ChatRoomFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        roomName= getArguments().getString("roomName");
+        Log.d(LOG_TAG, "roomName" + roomName);
         mDatabase = FirebaseDatabase.getInstance();
         Log.d(LOG_TAG, dbName);
         myRef = mDatabase.getReference(dbName);
@@ -173,10 +175,17 @@ public class ChatRoomFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(LOG_TAG, "dataSnapshot:" + dataSnapshot);
+                int addedMsgs = 0;
                 for (DataSnapshot child: dataSnapshot.getChildren()) {
                     Map<String, String > message = (Map<String, String>) child.getValue();
                     ChatMessage chatMessage = new ChatMessage().fromObject(message);
                     Log.d(LOG_TAG, "chatMessage" + chatMessage);
+                    Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
+                    Log.d(LOG_TAG, "chatMessage: text " + chatMessage.getText());
+                    Log.d(LOG_TAG, "room " + roomName);
+                    Log.d(LOG_TAG, "----------------------");
+
+
                     if(chatMessage.getRoom() == roomName) {
                         chatMessagesList.add(chatMessage);
                         mAdapter.notifyDataSetChanged();
@@ -195,17 +204,16 @@ public class ChatRoomFragment extends Fragment {
 
     // listens and appends to list new message from Firebase
     private void getLastMessageFromDatabase() {
-        myRef.limitToLast(1).addChildEventListener(new ChildEventListener() {
+        myRef.limitToLast(1000
+        ).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(LOG_TAG, "dataSnapshot: " + dataSnapshot.getValue());
                 Map<String, String> message = (Map<String, String>) dataSnapshot.getValue();
                 ChatMessage chatMessage = new ChatMessage().fromObject(message);
                 Log.d(LOG_TAG, "chatMessage: " + chatMessage);
-                Log.d(LOG_TAG, "chatMessage: " + chatMessage.getRoom());
-                Log.d(LOG_TAG, "chatMessage: " + chatMessage.getText());
-
-                Log.d(LOG_TAG, "chatMessage: " + chatMessage.toString());
+                Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
+                Log.d(LOG_TAG, "chatMessage: text " + chatMessage.getText());
 
                 if(chatMessage.getRoom() == roomName) {
                     chatMessagesList.add(chatMessage);

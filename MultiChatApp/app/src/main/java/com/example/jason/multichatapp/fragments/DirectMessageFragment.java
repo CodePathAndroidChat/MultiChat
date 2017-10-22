@@ -9,9 +9,10 @@ import android.os.Bundle;
 public class DirectMessageFragment extends ChatRoomFragment {
     private String dbName = "bloop";
 
-    public static DirectMessageFragment newInstance() {
+    public static DirectMessageFragment newInstance(String roomName) {
 
         Bundle args = new Bundle();
+        args.putString("roomName", roomName);
 
         DirectMessageFragment fragment = new DirectMessageFragment();
         fragment.setArguments(args);
