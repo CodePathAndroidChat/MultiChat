@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.adapters.MessagesAdapter;
-
 import com.example.jason.multichatapp.databinding.FragmentChatRoomBinding;
 import com.example.jason.multichatapp.models.ChatMessage;
 import com.google.firebase.database.ChildEventListener;
@@ -33,13 +31,13 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cz.msebera.android.httpclient.Header;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * ChatRoomFragment-
@@ -66,6 +64,7 @@ public class ChatRoomFragment extends Fragment {
     private List<ChatMessage> chatMessagesList = new ArrayList<>();
 
     private String dbName = "message";
+    private String roomName = "globalRoom";
     public static ChatRoomFragment newInstance() {
 
         Bundle args = new Bundle();
@@ -155,6 +154,7 @@ public class ChatRoomFragment extends Fragment {
         }
         DatabaseReference myRef = mDatabase.getReference("message");
         myRef.push().setValue(new ChatMessage(
+                roomName,
             new Timestamp(System.currentTimeMillis()).toString(),
             originalMessage,
             uid,
@@ -177,11 +177,13 @@ public class ChatRoomFragment extends Fragment {
                     Map<String, String > message = (Map<String, String>) child.getValue();
                     ChatMessage chatMessage = new ChatMessage().fromObject(message);
                     Log.d(LOG_TAG, "chatMessage" + chatMessage);
-                    chatMessagesList.add(chatMessage);
-                    mAdapter.notifyDataSetChanged();
-                    //get data, update dataset and remove listener
-                    rvMessages.scrollToPosition(chatMessagesList.size() - 1);
-                }
+                    if(chatMessage.getRoomName() == roomName) {
+                        chatMessagesList.add(chatMessage);
+                        mAdapter.notifyDataSetChanged();
+                        //get data, update dataset and remove listener
+                        rvMessages.scrollToPosition(chatMessagesList.size() - 1);
+                    }
+                                 }
                 myRef.removeEventListener(this);
             }
             @Override
@@ -200,9 +202,11 @@ public class ChatRoomFragment extends Fragment {
                 Map<String, String> message = (Map<String, String>) dataSnapshot.getValue();
                 ChatMessage chatMessage = new ChatMessage().fromObject(message);
                 Log.d(LOG_TAG, "chatMessage: " + chatMessage);
-                chatMessagesList.add(chatMessage);
-                mAdapter.notifyItemInserted(chatMessagesList.size() - 1);
-                rvMessages.scrollToPosition(chatMessagesList.size() - 1);
+                if(chatMessage.getRoomName() == roomName) {
+                    chatMessagesList.add(chatMessage);
+                    mAdapter.notifyItemInserted(chatMessagesList.size() - 1);
+                    rvMessages.scrollToPosition(chatMessagesList.size() - 1);
+                }
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {

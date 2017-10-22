@@ -11,6 +11,7 @@ public class ChatMessage {
     private final String FIELD_TIMESTAMP = "timestamp";
     private final String FIELD_TEXT = "text";
     private final String FIELD_NAME = "name";
+    private final String ROOM_NAME = "room_name";
     private final String FIELD_LANGUAGE = "language";
 
 
@@ -19,6 +20,7 @@ public class ChatMessage {
     private String text;
     private String name;
     private String language;
+    private String roomName;
     private String en;
     private String es;
     private String ru;
@@ -27,9 +29,10 @@ public class ChatMessage {
     public ChatMessage() {
     }
 
-    public ChatMessage(String timestamp, String text, String name, String language, String en, String es, String ru, String jp) {
+    public ChatMessage(String roomName, String timestamp, String text, String name, String language, String en, String es, String ru, String jp) {
         this.timestamp = timestamp;
         this.text = text;
+        this.roomName = roomName;
         this.name = name;
         this.language = language;
         this.en = en;
@@ -41,6 +44,7 @@ public class ChatMessage {
     public ChatMessage fromObject(Map<String, String> message) {
         this.timestamp = message.get(FIELD_TIMESTAMP);
         this.text = message.get(FIELD_TEXT);
+        this.roomName = message.get(ROOM_NAME);
         this.name = message.get(FIELD_NAME);
         this.language = message.get(FIELD_LANGUAGE);
         this.en = message.get(LANGUAGE_EN);
@@ -53,6 +57,8 @@ public class ChatMessage {
     public String getId() {
         return id;
     }
+
+    public String getRoomName() { return roomName; }
 
     public void setId(String id) {
         this.id = id;
