@@ -177,7 +177,7 @@ public class ChatRoomFragment extends Fragment {
                     Map<String, String > message = (Map<String, String>) child.getValue();
                     ChatMessage chatMessage = new ChatMessage().fromObject(message);
                     Log.d(LOG_TAG, "chatMessage" + chatMessage);
-                    if(chatMessage.getRoomName() == roomName) {
+                    if(chatMessage.getRoom() == roomName) {
                         chatMessagesList.add(chatMessage);
                         mAdapter.notifyDataSetChanged();
                         //get data, update dataset and remove listener
@@ -202,7 +202,12 @@ public class ChatRoomFragment extends Fragment {
                 Map<String, String> message = (Map<String, String>) dataSnapshot.getValue();
                 ChatMessage chatMessage = new ChatMessage().fromObject(message);
                 Log.d(LOG_TAG, "chatMessage: " + chatMessage);
-                if(chatMessage.getRoomName() == roomName) {
+                Log.d(LOG_TAG, "chatMessage: " + chatMessage.getRoom());
+                Log.d(LOG_TAG, "chatMessage: " + chatMessage.getText());
+
+                Log.d(LOG_TAG, "chatMessage: " + chatMessage.toString());
+
+                if(chatMessage.getRoom() == roomName) {
                     chatMessagesList.add(chatMessage);
                     mAdapter.notifyItemInserted(chatMessagesList.size() - 1);
                     rvMessages.scrollToPosition(chatMessagesList.size() - 1);
