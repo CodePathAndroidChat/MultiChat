@@ -123,6 +123,7 @@ public class LoginActivity extends AppCompatActivity implements
         editor.putString(getString(R.string.s_email), email);
         editor.putString(getString(R.string.s_language), Utils.getLanguageFromCode(language));
         editor.putString(getString(R.string.s_location), location);
+        editor.putString(getString(R.string.s_uid), mAuth.getCurrentUser().getUid());
         editor.apply();
     }
 }

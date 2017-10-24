@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
             // FirebaseUser.getToken() instead.
             uid = currentUser.getUid();
             if (chatRoomFragment.isAdded()) {
-                chatRoomFragment.getUserInfo(email, uid);
+                chatRoomFragment.getUserInfo(uid);
             }
             Log.d(TAG, "User is logged " + uid);
         } else {
