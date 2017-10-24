@@ -50,6 +50,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         public TextView tvMyTimeAgo;
         public RelativeLayout rlMessage;
         public RelativeLayout rlMyMessage;
+        public TextView tvOriginalMessage;
+        public TextView tvMyOriginalMessage;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -62,6 +64,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             tvMyTimeAgo = (TextView) itemView.findViewById(R.id.tvMyTimeAgo);
             rlMessage = (RelativeLayout) itemView.findViewById(R.id.rlMessage);
             rlMyMessage = (RelativeLayout) itemView.findViewById(R.id.rlMyMessage);
+            tvOriginalMessage = (TextView) itemView.findViewById(R.id.tvOriginalMessage);
+            tvMyOriginalMessage = (TextView) itemView.findViewById(R.id.tvMyOriginalMessage);
             itemView.setOnClickListener(this);
         }
 
@@ -69,8 +73,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         public void onClick(View v) {
             int position = getAdapterPosition();
             ChatMessage message = mChatMessages.get(position);
-            mViewHolder.tvMessage.setText(message.getText());
-//            mClickListener.onItemClicked(v, message);
+            tvOriginalMessage.setVisibility(View.VISIBLE);
+            tvMyOriginalMessage.setVisibility(View.VISIBLE);
+            mClickListener.onItemClicked(v, message);
         }
     }
 
@@ -107,24 +112,29 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             holder.rlMyMessage.setVisibility(View.VISIBLE);
             holder.rlMessage.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT); // TODO set gravity to RIGHT
             // Set item views based on your views and data model
-            TextView myTextView = mViewHolder.tvMyMessage;
+            TextView myTextView = holder.tvMyMessage;
             myTextView.setText(messageToDisplay);
-            TextView myUserName = mViewHolder.tvMyUserName;
+            TextView myUserName = holder.tvMyUserName;
             myUserName.setText(userId);
-            TextView myTime = mViewHolder.tvMyTimeAgo;
+            TextView myTime = holder.tvMyTimeAgo;
             myTime.setText(new DateTimeUtils().getRelativeTimeAgo(message.getTimestamp()));
+            TextView myOriginalMessage =  holder.tvMyOriginalMessage;
+            myOriginalMessage.setText(message.getText());
+
 
         } else {
             holder.rlMessage.setVisibility(View.VISIBLE);
             holder.rlMyMessage.setVisibility(View.INVISIBLE);
             holder.rlMessage.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
             // Set item views based on your views and data model
-            TextView textView = mViewHolder.tvMessage;
+            TextView textView = holder.tvMessage;
             textView.setText(messageToDisplay);
-            TextView userName = mViewHolder.tvUserName;
+            TextView userName = holder.tvUserName;
             userName.setText(userId);
-            TextView time = mViewHolder.tvTimeAgo;
+            TextView time = holder.tvTimeAgo;
             time.setText(new DateTimeUtils().getRelativeTimeAgo(message.getTimestamp()));
+            TextView originalMessage =  holder.tvOriginalMessage;
+            originalMessage.setText(message.getText());
         }
     }
 
