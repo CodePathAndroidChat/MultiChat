@@ -32,6 +32,7 @@ import com.example.jason.multichatapp.fragments.ChatRoomFragment;
 import com.example.jason.multichatapp.fragments.DirectMessageFragment;
 import com.example.jason.multichatapp.fragments.EditProfileFragment;
 import com.example.jason.multichatapp.fragments.UsersListFragment;
+import com.example.jason.multichatapp.models.PublicUser;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -310,10 +311,10 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
     }
 
     @Override
-    public void onUserPMTapped(String loadPrivateChatRoom) {
-        Log.d(TAG, "load chatroom with " + loadPrivateChatRoom);
-
-        directMessageFragment = DirectMessageFragment.newInstance(loadPrivateChatRoom);
+    public void onUserPMTapped(PublicUser user2) {
+        String chatroomName = Utils.getPrivateChatRoomId(uid /*"me"*/, user2.uid);
+        Log.d(TAG, "load chatroom with " + chatroomName);
+        directMessageFragment = DirectMessageFragment.newInstance(chatroomName);
         showFragment(directMessageFragment, new Fragment[]{supportMapFragment, usersListFragment, editProfileFragment, chatRoomFragment});
 
     }

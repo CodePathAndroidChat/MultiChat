@@ -43,7 +43,7 @@ public class UsersListFragment extends Fragment implements
 
 
     public interface  LoadPrivateChatroomListener {
-        public void onUserPMTapped(String loadPrivateChatRoom);
+        public void onUserPMTapped(PublicUser loadPrivateChatRoom);
     }
 
     public static UsersListFragment newInstance() {
@@ -73,7 +73,7 @@ public class UsersListFragment extends Fragment implements
 
 //        Utils.showSnackBar(view, users.get(position).email + " clicked");
         Log.d("fragment", users.get(position).email);
-        ((LoadPrivateChatroomListener) getActivity()).onUserPMTapped(users.get(position).email);
+        ((LoadPrivateChatroomListener) getActivity()).onUserPMTapped(users.get(position));
     }
 
     // Make public interface  --> direct message clicked , on Click listener with position-->

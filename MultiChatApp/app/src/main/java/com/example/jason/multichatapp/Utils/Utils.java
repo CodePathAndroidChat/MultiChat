@@ -3,8 +3,6 @@ package com.example.jason.multichatapp.Utils;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
-import com.example.jason.multichatapp.models.PublicUser;
-
 /**
  * Utils- convenient class contains often used method
  */
@@ -45,11 +43,11 @@ public class Utils {
         }
     }
 
-    public static String getPrivateChatRoomId(PublicUser user1, PublicUser user2) {
-        if (user1.uid.compareTo(user2.uid) < 0) {
-            return "chatRoom_ " + user1.uid.concat(user2.uid);
+    public static String getPrivateChatRoomId(String user1_uid, String user2_uid) {
+        if (user1_uid.compareTo(user2_uid) < 0) {
+            return "chatRoom_ " + user1_uid.concat(user2_uid);
         } else {
-            return "chatRoom_ " + user2.uid.concat(user1.uid);
+            return "chatRoom_ " + user2_uid.concat(user1_uid);
         }
     }
 }
