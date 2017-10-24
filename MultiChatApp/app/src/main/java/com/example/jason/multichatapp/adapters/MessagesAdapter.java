@@ -24,16 +24,23 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     private Context mContext;
     private ViewHolder mViewHolder;
 
-    public MessagesAdapter(Context context, List<ChatMessage> messages) {
+    private ItemClickListener mClickListener;
+
+    public interface ItemClickListener {
+        void onItemClicked(View v, ChatMessage message);
+    }
+
+    public MessagesAdapter(Context context, List<ChatMessage> messages, ItemClickListener listener) {
         mChatMessages = messages;
         mContext = context;
+        mClickListener = listener;
     }
 
     private Context getContext() {
         return mContext;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView tvMessage;
         public TextView tvUserName;
@@ -55,6 +62,15 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             tvMyTimeAgo = (TextView) itemView.findViewById(R.id.tvMyTimeAgo);
             rlMessage = (RelativeLayout) itemView.findViewById(R.id.rlMessage);
             rlMyMessage = (RelativeLayout) itemView.findViewById(R.id.rlMyMessage);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            ChatMessage message = mChatMessages.get(position);
+            mViewHolder.tvMessage.setText(message.getText());
+//            mClickListener.onItemClicked(v, message);
         }
     }
 
@@ -81,7 +97,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         String email = sharedPreferences.getString("email", null);
         String uid = sharedPreferences.getString("uid", null);
         String language = sharedPreferences.getString("language", "English");
-
         String messageToDisplay = message.getTextByLanguage(Utils.getLanguageCode(language));
         if (messageToDisplay == null) {
             messageToDisplay = message.getText();
