@@ -41,7 +41,8 @@ public class ChatMessage {
         this.jp = jp;
     }
 
-    public ChatMessage fromObject(Map<String, String> message) {
+    public ChatMessage fromObject(String id, Map<String, String> message) {
+        this.id = id;
         this.timestamp = message.get(FIELD_TIMESTAMP);
         this.text = message.get(FIELD_TEXT);
         this.room = message.get(FIELD_ROOM);
@@ -139,5 +140,16 @@ public class ChatMessage {
             default:
                 return this.text;
         }
+    }
+
+    public String toString() {
+        return "Message: {id: " + this.id + ", timestamp: " + timestamp + ", text: " + this.text + ", name: " + name +"}";
+    }
+
+    // modify message locally when firebase sends update
+    public void updateMessage(ChatMessage chatMessage) {
+        this.jp = chatMessage.jp;
+        this.ru = chatMessage.ru;
+        this.es = chatMessage.es;
     }
 }

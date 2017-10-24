@@ -1,5 +1,7 @@
 package com.example.jason.multichatapp.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,19 +10,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.jason.multichatapp.R;
+import com.example.jason.multichatapp.Utils.Utils;
 import com.example.jason.multichatapp.adapters.MessagesAdapter;
 import com.example.jason.multichatapp.databinding.FragmentChatRoomBinding;
 import com.example.jason.multichatapp.models.ChatMessage;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,7 +35,6 @@ import org.json.JSONObject;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
@@ -53,15 +51,15 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
     private FirebaseDatabase mDatabase;
     private DatabaseReference myRef;
     private MessagesAdapter mAdapter;
+    private ValueEventListener mEventListener;
 
     private String uid;
-    private String email;
+    private String locale;
 
     private FragmentChatRoomBinding binding;
     private Button btnSendMessage;
     private EditText etMessages;
     private RecyclerView rvMessages;
-    private TextView tvMessages;
 
     private List<ChatMessage> chatMessagesList = new ArrayList<>();
 
@@ -84,6 +82,8 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
         mDatabase = FirebaseDatabase.getInstance();
         Log.d(LOG_TAG, dbName);
         myRef = mDatabase.getReference(dbName);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(getString(R.string.user_info), Context.MODE_PRIVATE);
+        locale = Utils.getLanguageCode(sharedPreferences.getString(getString(R.string.s_language), "English"));
     }
 
     @Nullable
@@ -104,8 +104,7 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupView();
-        getAllMessagesFromDatabase(); // add all previous messages
-        getLastMessageFromDatabase(); // subscribe to listen for new messages
+        getAllMessagesFromDatabase();
     }
 
     @Override
@@ -113,10 +112,16 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
         super.onResume();
         setOnClickListener();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        myRef.removeEventListener(mEventListener);
+    }
+
     // for activity call. get email and uid from activity::onstart
-    public void getUserInfo(String email, String uid) {
+    public void getUserInfo(String uid) {
         this.uid = uid;
-        this.email = email;
     }
 
     private void setupView() {
@@ -130,7 +135,7 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
             public void onClick(View view) {
                 String originalMessage = binding.etMessage.getText().toString();
                 // Translate message to English if not in English
-                if (!Locale.getDefault().getLanguage().equals("en")) {
+                if (!locale.equals("en")) {
                     Log.d(LOG_TAG, "Translating nonEnglish string before saving to Firebase");
                     getTranslationToEnglish(originalMessage);
                 } else {
@@ -145,7 +150,7 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
         String esMessage = null;
         String ruMessage = null;
         String jaMessage = null;
-        switch (Locale.getDefault().getLanguage()) {
+        switch (locale) {
             case "ru":
                 ruMessage = originalMessage;
                 break;
@@ -158,11 +163,11 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
         }
         DatabaseReference myRef = mDatabase.getReference("message");
         myRef.push().setValue(new ChatMessage(
-                roomName,
+            roomName,
             new Timestamp(System.currentTimeMillis()).toString(),
             originalMessage,
             uid,
-            Locale.getDefault().getLanguage(),
+            locale,
             englishMessage,
             esMessage,
             ruMessage,
@@ -171,16 +176,17 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
         etMessages.setText("");
     }
 
-    // returns all messages from Firebase
+    // returns all messages from Firebase and subscribes to new events
     private void getAllMessagesFromDatabase() {
-        myRef.addValueEventListener(new ValueEventListener() {
+        mEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(LOG_TAG, "dataSnapshot:" + dataSnapshot);
                 int addedMsgs = 0;
                 for (DataSnapshot child: dataSnapshot.getChildren()) {
                     Map<String, String > message = (Map<String, String>) child.getValue();
-                    ChatMessage chatMessage = new ChatMessage().fromObject(message);
+                    ChatMessage chatMessage = new ChatMessage().fromObject(child.getKey(), message);
+                    Log.d(LOG_TAG, "onDataChange event: " + chatMessage.toString());
                     Log.d(LOG_TAG, "chatMessage" + chatMessage);
                     Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
                     Log.d(LOG_TAG, "chatMessage: text " + chatMessage.getText());
@@ -188,66 +194,21 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
                     Log.d(LOG_TAG, "----------------------");
 
                     if(roomName.equals(chatMessage.getRoom())) {
-                        chatMessagesList.add(chatMessage);
-                        mAdapter.notifyDataSetChanged();
-                        //get data, update dataset and remove listener
-                        rvMessages.scrollToPosition(chatMessagesList.size() - 1);
+                        checkIfMessageInTheListAndUpdate(chatMessage);
                     } else {
 //                        Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
-
                     }
-                                 }
-                myRef.removeEventListener(this);
+                 }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(LOG_TAG, "Failed to read value.", databaseError.toException());
             }
-        });
+        };
+        myRef.addValueEventListener(mEventListener);
     }
 
-    // listens and appends to list new message from Firebase
-    private void getLastMessageFromDatabase() {
-        myRef.limitToLast(100
-        ).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d(LOG_TAG, "dataSnapshot: " + dataSnapshot.getValue());
-                Map<String, String> message = (Map<String, String>) dataSnapshot.getValue();
-                ChatMessage chatMessage = new ChatMessage().fromObject(message);
-                Log.d(LOG_TAG, "chatMessage: " + chatMessage);
-                Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
-                Log.d(LOG_TAG, "chatMessage: text " + chatMessage.getText());
-
-                if(roomName.equals(chatMessage.getRoom())) {
-                    chatMessagesList.add(chatMessage);
-                    mAdapter.notifyItemInserted(chatMessagesList.size() - 1);
-                    rvMessages.scrollToPosition(chatMessagesList.size() - 1);
-                } else {
-//                    Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
-
-                }
-            }
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    public void getTranslationToEnglish(final String messageToTranslate) {
+    private void getTranslationToEnglish(final String messageToTranslate) {
         AsyncHttpClient client = new AsyncHttpClient();
         RequestParams params = new RequestParams();
         params.put("key", getString(R.string.translate_key));
@@ -275,5 +236,21 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
     @Override
     public void onItemClicked(View v, ChatMessage message) {
         // add click logic here if necessary
+    }
+
+    private void checkIfMessageInTheListAndUpdate(ChatMessage chatMessage) {
+        Log.d(LOG_TAG, "Checking if message already exists " + chatMessage.toString());
+        for (int i=0; i < chatMessagesList.size(); i++) {
+            if (chatMessage.getId().equals(chatMessagesList.get(i).getId())) {
+                chatMessagesList.get(i).updateMessage(chatMessage);
+                mAdapter.notifyItemChanged(i);
+                Log.d(LOG_TAG, "Message was in the list.");
+                return;
+            }
+        }
+        chatMessagesList.add(chatMessage);
+        Log.d(LOG_TAG, "Message is new, adding to the list.");
+        mAdapter.notifyItemInserted(chatMessagesList.size() - 1);
+        rvMessages.scrollToPosition(chatMessagesList.size() - 1);
     }
 }
