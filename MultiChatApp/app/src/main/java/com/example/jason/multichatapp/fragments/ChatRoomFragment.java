@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -19,7 +18,6 @@ import android.widget.Toast;
 
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.adapters.MessagesAdapter;
-
 import com.example.jason.multichatapp.databinding.FragmentChatRoomBinding;
 import com.example.jason.multichatapp.models.ChatMessage;
 import com.google.firebase.database.ChildEventListener;
@@ -35,13 +33,13 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cz.msebera.android.httpclient.Header;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * ChatRoomFragment-
@@ -68,10 +66,11 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
     private List<ChatMessage> chatMessagesList = new ArrayList<>();
 
     private String dbName = "message";
+    private String roomName = "globalRoom";
     public static ChatRoomFragment newInstance() {
 
         Bundle args = new Bundle();
-
+        args.putString("roomName", "globalRoom");
         ChatRoomFragment fragment = new ChatRoomFragment();
         fragment.setArguments(args);
         return fragment;
@@ -80,6 +79,8 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        roomName= getArguments().getString("roomName");
+        Log.d(LOG_TAG, "roomName" + roomName);
         mDatabase = FirebaseDatabase.getInstance();
         Log.d(LOG_TAG, dbName);
         myRef = mDatabase.getReference(dbName);
@@ -157,6 +158,7 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
         }
         DatabaseReference myRef = mDatabase.getReference("message");
         myRef.push().setValue(new ChatMessage(
+                roomName,
             new Timestamp(System.currentTimeMillis()).toString(),
             originalMessage,
             uid,
@@ -175,15 +177,26 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(LOG_TAG, "dataSnapshot:" + dataSnapshot);
+                int addedMsgs = 0;
                 for (DataSnapshot child: dataSnapshot.getChildren()) {
                     Map<String, String > message = (Map<String, String>) child.getValue();
                     ChatMessage chatMessage = new ChatMessage().fromObject(message);
                     Log.d(LOG_TAG, "chatMessage" + chatMessage);
-                    chatMessagesList.add(chatMessage);
-                    mAdapter.notifyDataSetChanged();
-                    //get data, update dataset and remove listener
-                    rvMessages.scrollToPosition(chatMessagesList.size() - 1);
-                }
+                    Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
+                    Log.d(LOG_TAG, "chatMessage: text " + chatMessage.getText());
+                    Log.d(LOG_TAG, "room " + roomName);
+                    Log.d(LOG_TAG, "----------------------");
+
+                    if(roomName.equals(chatMessage.getRoom())) {
+                        chatMessagesList.add(chatMessage);
+                        mAdapter.notifyDataSetChanged();
+                        //get data, update dataset and remove listener
+                        rvMessages.scrollToPosition(chatMessagesList.size() - 1);
+                    } else {
+//                        Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
+
+                    }
+                                 }
                 myRef.removeEventListener(this);
             }
             @Override
@@ -195,16 +208,25 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
 
     // listens and appends to list new message from Firebase
     private void getLastMessageFromDatabase() {
-        myRef.limitToLast(1).addChildEventListener(new ChildEventListener() {
+        myRef.limitToLast(100
+        ).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(LOG_TAG, "dataSnapshot: " + dataSnapshot.getValue());
                 Map<String, String> message = (Map<String, String>) dataSnapshot.getValue();
                 ChatMessage chatMessage = new ChatMessage().fromObject(message);
                 Log.d(LOG_TAG, "chatMessage: " + chatMessage);
-                chatMessagesList.add(chatMessage);
-                mAdapter.notifyItemInserted(chatMessagesList.size() - 1);
-                rvMessages.scrollToPosition(chatMessagesList.size() - 1);
+                Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
+                Log.d(LOG_TAG, "chatMessage: text " + chatMessage.getText());
+
+                if(roomName.equals(chatMessage.getRoom())) {
+                    chatMessagesList.add(chatMessage);
+                    mAdapter.notifyItemInserted(chatMessagesList.size() - 1);
+                    rvMessages.scrollToPosition(chatMessagesList.size() - 1);
+                } else {
+//                    Log.d(LOG_TAG, "chatMessage: room " + chatMessage.getRoom());
+
+                }
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
