@@ -44,6 +44,14 @@
             android:layout_below="@+id/tvUserName"
             android:layout_margin="@dimen/item_margin"
             tools:text="Message"/>
+        <TextView
+            android:id="@+id/tvOriginalMessage"
+            android:textSize="10sp"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvMessage"
+            tools:text="Original Message"/>
 
     </RelativeLayout>
 
@@ -80,6 +88,14 @@
             android:layout_margin="@dimen/item_margin"
             android:layout_alignParentLeft="true"
             tools:text="Message"/>
+        <TextView
+            android:id="@+id/tvMyOriginalMessage"
+            android:textSize="10sp"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvMyMessage"
+            tools:text="Original Message"/>
 
     </RelativeLayout>
 

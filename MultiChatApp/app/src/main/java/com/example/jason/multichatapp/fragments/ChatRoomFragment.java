@@ -78,7 +78,7 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         roomName= getArguments().getString("roomName");
-        Log.d(LOG_TAG, "roomName" + roomName);
+        Log.d(LOG_TAG, "roomName " + roomName);
         mDatabase = FirebaseDatabase.getInstance();
         Log.d(LOG_TAG, dbName);
         myRef = mDatabase.getReference(dbName);
@@ -182,7 +182,6 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(LOG_TAG, "dataSnapshot:" + dataSnapshot);
-                int addedMsgs = 0;
                 for (DataSnapshot child: dataSnapshot.getChildren()) {
                     Map<String, String > message = (Map<String, String>) child.getValue();
                     ChatMessage chatMessage = new ChatMessage().fromObject(child.getKey(), message);
@@ -235,7 +234,7 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
 
     @Override
     public void onItemClicked(View v, ChatMessage message) {
-        // add click logic here if necessary
+        Log.d(LOG_TAG, "Message clicked " + message.toString()); // TODO remove if no need to interact with message list
     }
 
     private void checkIfMessageInTheListAndUpdate(ChatMessage chatMessage) {

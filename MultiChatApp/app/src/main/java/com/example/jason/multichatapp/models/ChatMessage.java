@@ -143,7 +143,17 @@ public class ChatMessage {
     }
 
     public String toString() {
-        return "Message: {id: " + this.id + ", timestamp: " + timestamp + ", text: " + this.text + ", name: " + name +"}";
+        return "Message: {id: " + this.id
+            + ", timestamp: " + timestamp
+            + ", text: " + this.text
+            + ", name: " + name
+            + ", language: " + language
+            + ", room: " + room
+            + ", en: " + en
+            + ", es: " + es
+            + ", ru: " + ru
+            + ", jp: " + jp
+            +"}";
     }
 
     // modify message locally when firebase sends update
