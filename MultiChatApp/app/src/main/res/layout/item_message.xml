@@ -10,6 +10,7 @@
                                     android:clickable="true"
                                     android:focusable="true"
                                     android:orientation="vertical"
+                                    android:stateListAnimator="@anim/animation"
                                     android:foreground="?android:attr/selectableItemBackground"
                                     app:cardCornerRadius="@dimen/item_margin"
                                     app:cardElevation="@dimen/item_margin">
