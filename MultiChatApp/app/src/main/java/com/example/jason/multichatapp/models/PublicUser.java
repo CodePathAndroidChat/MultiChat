@@ -33,4 +33,12 @@ public class PublicUser {
         this.location = message.get("location");
         return this;
     }
+
+    public String toString() {
+        return "User: " +
+            "{uid: " + this.uid +
+            ", email: " + this.email +
+            ", language: " + this.language +
+            ", location: " + this.location + "}";
+    }
 }

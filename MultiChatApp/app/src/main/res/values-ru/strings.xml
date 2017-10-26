@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MultiChat</string>
+    <string name="email">Адрес электронной почты</string>
+    <string name="existing_user_login">Уже есть аккаунт?</string>
+    <string name="password">Пароль</string>
+    <string name="log_in">Войти</string>
+    <string name="sign_up">Зарегестрироваться</string>
+    <string name="enter_your_message">Введите сообщение</string>
+    <string name="send_button">Отправить</string>
+    <string name="welcome_to_world_chat">Добро пожаловать в World Chat</string>
+    <string name="global_chat_room">Общий чат</string>
+    <string name="map_of_users">Карта пользователей</string>
+    <string name="users_in_char">Пользователи в чате</string>
+    <string name="edit_profile">Редактировать профиль</string>
+    <string name="notifications">Уведомления</string>
+    <string name="log_out">Выйти</string>
+    <string name="save">Сохранить</string>
+    <string name="authentication_text">Пожалуйста, введите адрес электронной почты и пароль, чтобы подтвердить аккаунт</string>
+    <string name="ok">OK</string>
+</resources>
