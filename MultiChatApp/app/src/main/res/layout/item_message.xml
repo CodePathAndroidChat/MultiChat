@@ -20,6 +20,40 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/item_margin">
 
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="0dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_launcher_round" />
+
+        <ImageView
+            android:id="@+id/ivFlag"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:foregroundGravity="center"
+            android:scaleType="fitStart"
+            android:src="@drawable/us_icon"
+            android:layout_centerVertical="true"
+            android:layout_alignRight="@+id/tvOriginalLanguage"
+            android:layout_alignEnd="@+id/tvOriginalLanguage"/>
+
+        <TextView
+            android:id="@+id/tvOriginalLanguage"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ivAvatar"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            tools:text="es" />
+
         <TextView
             android:id="@+id/tvUserName"
             android:layout_width="wrap_content"
@@ -27,6 +61,8 @@
             android:layout_alignParentTop="true"
             android:layout_margin="@dimen/item_margin"
             android:textStyle="bold"
+            android:layout_toEndOf="@+id/ivAvatar"
+            android:layout_toRightOf="@+id/ivAvatar"
             tools:text="User Name"/>
 
         <TextView
@@ -43,14 +79,19 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvUserName"
             android:layout_margin="@dimen/item_margin"
+            android:layout_toEndOf="@+id/ivAvatar"
+            android:layout_toRightOf="@+id/ivAvatar"
             tools:text="Message"/>
         <TextView
             android:id="@+id/tvOriginalMessage"
             android:textSize="10sp"
             android:visibility="invisible"
+            android:layout_marginLeft="@dimen/item_margin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvMessage"
+            android:layout_toEndOf="@+id/ivAvatar"
+            android:layout_toRightOf="@+id/ivAvatar"
             tools:text="Original Message"/>
 
     </RelativeLayout>
@@ -60,24 +101,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/item_margin"
-        android:gravity="right">
+        android:layout_gravity="right">
+
+        <TextView
+            android:id="@+id/tvMyTimeAgo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="1:16 PM"
+            android:layout_marginRight="13dp"
+            android:layout_alignBaseline="@+id/tvMyUserName"
+            android:layout_alignBottom="@+id/tvMyUserName"
+            android:layout_toLeftOf="@+id/ivMyAvatar"
+            android:layout_toStartOf="@+id/ivMyAvatar"
+            android:layout_marginEnd="2dp"/>
 
         <TextView
             android:id="@+id/tvMyUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/tvMyTimeAgo"
             android:layout_margin="@dimen/item_margin"
             android:textStyle="bold"
             tools:text="User Name"/>
-
-        <TextView
-            android:id="@+id/tvMyTimeAgo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/item_margin"
-            android:layout_toRightOf="@+id/tvMyUserName"
-            tools:text="1:16 PM"/>
 
         <TextView
             android:id="@+id/tvMyMessage"
@@ -86,7 +132,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvMyUserName"
             android:layout_margin="@dimen/item_margin"
-            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/ivMyAvatar"
             tools:text="Message"/>
         <TextView
             android:id="@+id/tvMyOriginalMessage"
@@ -95,7 +141,41 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvMyMessage"
+            android:layout_toLeftOf="@+id/ivMyAvatar"
             tools:text="Original Message"/>
+
+        <ImageView
+            android:id="@+id/ivMyAvatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:src="@mipmap/ic_launcher_round" />
+
+        <ImageView
+            android:id="@+id/ivMyFlag"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:foregroundGravity="center"
+            android:scaleType="fitCenter"
+            android:src="@drawable/us_icon"
+            android:layout_below="@+id/tvMyTimeAgo"
+            android:layout_alignRight="@+id/ivMyAvatar"
+            android:layout_alignEnd="@+id/ivMyAvatar"/>
+
+        <TextView
+            android:id="@+id/tvMyOriginalLanguage"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            tools:text="es"
+            android:layout_below="@+id/tvMyMessage"
+            android:layout_alignRight="@+id/ivMyAvatar"
+            android:layout_alignEnd="@+id/ivMyAvatar"/>
 
     </RelativeLayout>
 

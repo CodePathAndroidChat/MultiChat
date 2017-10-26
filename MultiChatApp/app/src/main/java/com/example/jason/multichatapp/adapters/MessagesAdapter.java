@@ -2,11 +2,14 @@ package com.example.jason.multichatapp.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -14,12 +17,15 @@ import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.Utils.DateTimeUtils;
 import com.example.jason.multichatapp.Utils.Utils;
 import com.example.jason.multichatapp.models.ChatMessage;
+import com.example.jason.multichatapp.models.PublicUser;
 
 import java.util.List;
+import java.util.Map;
 
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder> {
 
     private List<ChatMessage> mChatMessages;
+    private Map<String, PublicUser> mPublicUserMap;
 
     private Context mContext;
     private ViewHolder mViewHolder;
@@ -30,9 +36,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         void onItemClicked(View v, ChatMessage message);
     }
 
-    public MessagesAdapter(Context context, List<ChatMessage> messages, ItemClickListener listener) {
+    public MessagesAdapter(Context context,
+        List<ChatMessage> messages,
+        Map<String, PublicUser> users,
+        ItemClickListener listener) {
         mChatMessages = messages;
         mContext = context;
+        mPublicUserMap = users;
         mClickListener = listener;
     }
 
@@ -52,6 +62,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         public RelativeLayout rlMyMessage;
         public TextView tvOriginalMessage;
         public TextView tvMyOriginalMessage;
+        public TextView tvOriginalLanguage;
+        public TextView tvMyOriginalLanguage;
+        public ImageView ivFlag;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -66,6 +79,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             rlMyMessage = (RelativeLayout) itemView.findViewById(R.id.rlMyMessage);
             tvOriginalMessage = (TextView) itemView.findViewById(R.id.tvOriginalMessage);
             tvMyOriginalMessage = (TextView) itemView.findViewById(R.id.tvMyOriginalMessage);
+            tvOriginalLanguage = (TextView) itemView.findViewById(R.id.tvOriginalLanguage);
+            tvMyOriginalLanguage = (TextView) itemView.findViewById(R.id.tvMyOriginalLanguage);
+            ivFlag = (ImageView) itemView.findViewById(R.id.ivFlag);
             itemView.setOnClickListener(this);
         }
 
@@ -106,6 +122,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         if (messageToDisplay == null) {
             messageToDisplay = message.getText();
         }
+        //current user view on the right
         if (uid != null && uid.equals(message.getName())) {
             userId = email;
             holder.rlMessage.setVisibility(View.INVISIBLE);
@@ -120,9 +137,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             myTime.setText(new DateTimeUtils().getRelativeTimeAgo(message.getTimestamp()));
             TextView myOriginalMessage =  holder.tvMyOriginalMessage;
             myOriginalMessage.setText(message.getText());
-
-
+            TextView myOriginalLanguageView = holder.tvMyOriginalLanguage;
+            myOriginalLanguageView.setText(Utils.getLanguageCode(language));
+        //other user view on the left
         } else {
+            PublicUser user = findUserEmail(userId);
             holder.rlMessage.setVisibility(View.VISIBLE);
             holder.rlMyMessage.setVisibility(View.INVISIBLE);
             holder.rlMessage.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
@@ -130,12 +149,38 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             TextView textView = holder.tvMessage;
             textView.setText(messageToDisplay);
             TextView userName = holder.tvUserName;
-            userName.setText(userId);
+            if (user != null) {
+                userName.setText(user.email);
+                TextView lang = holder.tvOriginalLanguage;
+                lang.setText(user.language);
+            } else {
+                userName.setText(userId);
+            }
+            ImageView flagView = holder.ivFlag;
+            flagView.setImageResource(setFlagImageForUser(user));
             TextView time = holder.tvTimeAgo;
             time.setText(new DateTimeUtils().getRelativeTimeAgo(message.getTimestamp()));
             TextView originalMessage =  holder.tvOriginalMessage;
             originalMessage.setText(message.getText());
         }
+    }
+
+    private int setFlagImageForUser(PublicUser user) {
+        switch (user.location) {
+            case "US":
+            case "USA":
+                return R.drawable.us_icon;
+            case "RU":
+                return R.drawable.ru_icon;
+            default:
+                return R.drawable.us_icon;
+        }
+    }
+
+    private PublicUser findUserEmail(String userId) {
+        PublicUser user = mPublicUserMap.get(userId);
+        Log.d("@@@", "Found user: " + user.toString());
+        return user;
     }
 
     @Override
