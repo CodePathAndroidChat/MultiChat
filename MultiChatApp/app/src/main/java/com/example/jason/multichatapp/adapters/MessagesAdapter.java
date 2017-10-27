@@ -2,7 +2,6 @@ package com.example.jason.multichatapp.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
@@ -13,11 +12,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.Utils.DateTimeUtils;
 import com.example.jason.multichatapp.Utils.Utils;
 import com.example.jason.multichatapp.models.ChatMessage;
 import com.example.jason.multichatapp.models.PublicUser;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 import java.util.Map;
@@ -65,6 +68,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         public TextView tvOriginalLanguage;
         public TextView tvMyOriginalLanguage;
         public ImageView ivFlag;
+        public ImageView ivAvatar;
+        public ImageView ivMyAvatar;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -82,6 +87,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             tvOriginalLanguage = (TextView) itemView.findViewById(R.id.tvOriginalLanguage);
             tvMyOriginalLanguage = (TextView) itemView.findViewById(R.id.tvMyOriginalLanguage);
             ivFlag = (ImageView) itemView.findViewById(R.id.ivFlag);
+            ivAvatar = (ImageView) itemView.findViewById(R.id.ivAvatar);
+            ivMyAvatar = (ImageView) itemView.findViewById(R.id.ivMyAvatar);
             itemView.setOnClickListener(this);
         }
 
@@ -139,6 +146,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             myOriginalMessage.setText(message.getText());
             TextView myOriginalLanguageView = holder.tvMyOriginalLanguage;
             myOriginalLanguageView.setText(Utils.getLanguageCode(language));
+            if (FirebaseAuth.getInstance().getCurrentUser() != null && FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl() != null) {
+                String image = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
+                Glide.with(mContext).load(image)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(holder.ivMyAvatar);
+            } else {
+                TextDrawable drawable = TextDrawable.builder()
+                    .buildRound(userId.substring(0, 1).toUpperCase(), mContext.getResources().getColor(R.color.green_normal));
+                holder.ivMyAvatar.setImageDrawable(drawable);
+            }
+
+
         //other user view on the left
         } else {
             PublicUser user = findUserEmail(userId);
@@ -162,6 +181,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             time.setText(new DateTimeUtils().getRelativeTimeAgo(message.getTimestamp()));
             TextView originalMessage =  holder.tvOriginalMessage;
             originalMessage.setText(message.getText());
+            TextDrawable drawable = TextDrawable.builder()
+                .buildRound(user.email.substring(0, 1).toUpperCase(), mContext.getResources().getColor(R.color.green_light));
+            holder.ivAvatar.setImageDrawable(drawable);
         }
     }
 

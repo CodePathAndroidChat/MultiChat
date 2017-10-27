@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.models.PublicUser;
 
@@ -81,6 +82,10 @@ public class UserListsAdapter extends RecyclerView.Adapter<UserListsAdapter.View
                     arrowClickListener.onDirectMsgClick(view, getAdapterPosition());
                 }
             });
+
+            TextDrawable drawable = TextDrawable.builder()
+                .buildRound(user.email.substring(0, 1).toUpperCase(), context.getResources().getColor(R.color.green_light));
+            ivAvatar.setImageDrawable(drawable);
         }
     }
 }
