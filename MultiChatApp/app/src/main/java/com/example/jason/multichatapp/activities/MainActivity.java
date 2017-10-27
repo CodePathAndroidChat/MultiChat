@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
                     public void onSuccess(Location location) {
 //                        add pin here...?
                         Log.d(TAG, "lat: " + location.getLatitude() + "\tlong:" + location.getLongitude());
-                        BitmapDescriptor icon = MapUtils.createBubble(MainActivity.this, IconGenerator.STYLE_ORANGE, "You are here");
+                        BitmapDescriptor icon = MapUtils.createBubble(MainActivity.this, IconGenerator.STYLE_ORANGE, getString(R.string.you_are_here));
                         MapUtils.addMarker(googleMap, new LatLng(location.getLatitude(), location.getLongitude()),icon);
                         CameraUpdate center=
                             CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),

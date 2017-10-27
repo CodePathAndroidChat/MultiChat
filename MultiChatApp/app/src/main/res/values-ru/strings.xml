@@ -18,4 +18,10 @@
     <string name="save">Сохранить</string>
     <string name="authentication_text">Пожалуйста, введите адрес электронной почты и пароль, чтобы подтвердить аккаунт</string>
     <string name="ok">OK</string>
+    <string name="you_are_here">Вы здесь</string>
+    <string name="chat_in">Язык чата</string>
+    <string name="english_lang">Английский</string>
+    <string name="spanish_lang">Испанский</string>
+    <string name="russian_lang">Русский</string>
+    <string name="japanese_lang">Японский</string>
 </resources>
