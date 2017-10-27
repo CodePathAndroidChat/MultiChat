@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="language_array">
-        <item>English</item>
-        <item>Spanish</item>
-        <item>Japanese</item>
-        <item>Russian</item>
+        <item>@string/english_lang</item>
+        <item>@string/spanish_lang</item>
+        <item>@string/japanese_lang</item>
+        <item>@string/russian_lang</item>
     </string-array>
 </resources>

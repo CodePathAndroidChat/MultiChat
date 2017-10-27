@@ -14,14 +14,20 @@
     <string name="edit_profile">Edit Profile</string>r
     <string name="notifications">Notifications</string>
     <string name="log_out">Log out</string>
-    <string name="drawer_open">Open navigation drawer</string>
-    <string name="drawer_close">Close navigation drawer</string>
+    <string name="you_are_here">You are here</string>
+    <string name="drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="drawer_close" translatable="false">Close navigation drawer</string>
     <string name="save">Save</string>
     <string name="authentication_text">Please enter current email and password to confirm your account</string>
     <string name="ok">OK</string>
-    <string name="user_info">user information</string>
-    <string name="s_language">language</string>
-    <string name="s_location">location</string>
-    <string name="s_uid">uid</string>
-    <string name="s_email">email</string>
+    <string name="user_info" translatable="false">user information</string>
+    <string name="s_language" translatable="false">language</string>
+    <string name="s_location" translatable="false">location</string>
+    <string name="s_uid" translatable="false">uid</string>
+    <string name="s_email" translatable="false">email</string>
+    <string name="chat_in">Chat in</string>
+    <string name="english_lang">English</string>
+    <string name="spanish_lang">Spanish</string>
+    <string name="russian_lang">Russian</string>
+    <string name="japanese_lang">Japanese</string>
 </resources>
