@@ -194,6 +194,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     }
 
     private int setFlagImageForUser(PublicUser user) {
+        if (user == null) {
+            return R.drawable.us_icon;
+        }
+
+        if( user.country == null ) {
+            return R.drawable.us_icon;
+        }
         switch (user.country) {
             case "US":
             case "USA":
