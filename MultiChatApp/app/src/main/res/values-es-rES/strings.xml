@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MultiChat</string>
+    <string name="email">" dirección de correo electrónico"</string>
+    <string name="existing_user_login">¿Ya tienes una cuenta?</string>
+    <string name="password">"Contraseña "</string>
+    <string name="sign_up">Registrarse</string>
+    <string name="log_in">Ingresar</string>
+    <string name="enter_your_message">Pon tu mensaje</string>
+    <string name="send_button">Envia</string>
+    <string name="welcome_to_world_chat">Bienvenidos a la sala de chat mundial</string>
+    <string name="global_chat_room">Sala de Chat Mundial</string>
+    <string name="map_of_users">"Mapa "</string>
+    <string name="users_in_char">"Amigos "</string>
+    <string name="edit_profile">"Modificar datos "</string>
+    <string name="notifications">Notificaciones</string>
+    <string name="log_out">Cerrar sesión</string>
+    <string name="save">Guardar</string>
+    <string name="authentication_text">Porfavor pon tu direccion de correo electrónico y una contraseña</string>
+    <string name="ok">Ok</string>
+    <string name="you_are_here">Estás aquí</string>
+    <string name="chat_in">Habla en</string>
+    <string name="english_lang">Inglés</string>
+    <string name="spanish_lang">"Español "</string>
+    <string name="russian_lang">Ruso</string>
+    <string name="japanese_lang">Japonés</string>
+</resources>
