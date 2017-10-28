@@ -75,7 +75,7 @@ public class UserListsAdapter extends RecyclerView.Adapter<UserListsAdapter.View
         public void bind(PublicUser user) {
             tvName.setText(user.email);
             tvOriginalLanguage.setText(user.language);
-            tvLocation.setText(user.location);
+            tvLocation.setText(user.country);
             ivMsgArrow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

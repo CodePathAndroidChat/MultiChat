@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity implements
                         System.out.println("user.getKey(): " + user.getKey());
                         PublicUser currentUser = user.getValue(PublicUser.class);
                         if (currentUser != null) {
-                            saveUserToPref(currentUser.email, currentUser.language, currentUser.location);
+                            saveUserToPref(currentUser.email, currentUser.language, currentUser.country, currentUser.states);
                         }
                     }
                 }
@@ -117,12 +117,13 @@ public class LoginActivity extends AppCompatActivity implements
         publicUsersReference.addListenerForSingleValueEvent(userInfoListener);
     }
     // method for saving the current user info locally using sharedpreferences
-    private void saveUserToPref(String email, String language, String location) {
+    private void saveUserToPref(String email, String language, String country, String states) {
         SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.user_info), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(getString(R.string.s_email), email);
         editor.putString(getString(R.string.s_language), Utils.getLanguageFromCode(language));
-        editor.putString(getString(R.string.s_location), location);
+        editor.putString(getString(R.string.s_country), country);
+        editor.putString(getString(R.string.s_states), states);
         editor.putString(getString(R.string.s_uid), mAuth.getCurrentUser().getUid());
         editor.apply();
     }

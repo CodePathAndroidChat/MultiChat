@@ -30,4 +30,9 @@
     <string name="spanish_lang">Spanish</string>
     <string name="russian_lang">Russian</string>
     <string name="japanese_lang">Japanese</string>
+    <string name="location">Location</string>
+    <string name="s_country">country</string>
+    <string name="s_states">city</string>
+    <string name="latitude">latitude</string>
+    <string name="longitude">longitude</string>
 </resources>

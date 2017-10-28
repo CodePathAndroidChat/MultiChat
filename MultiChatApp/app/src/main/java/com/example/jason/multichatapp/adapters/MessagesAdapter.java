@@ -3,7 +3,6 @@ package com.example.jason.multichatapp.adapters;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -176,19 +175,26 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                 userName.setText(userId);
             }
             ImageView flagView = holder.ivFlag;
-            flagView.setImageResource(setFlagImageForUser(user));
+            TextDrawable drawable;
+            if (user != null) {
+                flagView.setImageResource(setFlagImageForUser(user));
+                drawable = TextDrawable.builder()
+                        .buildRound(user.email.substring(0, 1).toUpperCase(), mContext.getResources().getColor(R.color.green_light));
+            } else {
+                flagView.setImageResource(R.drawable.us_icon);
+                drawable = TextDrawable.builder()
+                        .buildRound("Default", mContext.getResources().getColor(R.color.green_light));
+            }
             TextView time = holder.tvTimeAgo;
             time.setText(new DateTimeUtils().getRelativeTimeAgo(message.getTimestamp()));
             TextView originalMessage =  holder.tvOriginalMessage;
             originalMessage.setText(message.getText());
-            TextDrawable drawable = TextDrawable.builder()
-                .buildRound(user.email.substring(0, 1).toUpperCase(), mContext.getResources().getColor(R.color.green_light));
             holder.ivAvatar.setImageDrawable(drawable);
         }
     }
 
     private int setFlagImageForUser(PublicUser user) {
-        switch (user.location) {
+        switch (user.country) {
             case "US":
             case "USA":
                 return R.drawable.us_icon;
@@ -201,7 +207,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     private PublicUser findUserEmail(String userId) {
         PublicUser user = mPublicUserMap.get(userId);
-        Log.d("@@@", "Found user: " + user.toString());
+//        Log.d("@@@", "Found user: " + user.toString());
         return user;
     }
 

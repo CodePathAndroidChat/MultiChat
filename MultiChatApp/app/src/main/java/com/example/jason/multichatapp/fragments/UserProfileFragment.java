@@ -31,6 +31,7 @@ public abstract class UserProfileFragment extends Fragment {
     private EditText etPassword;
     private Button btnProfile;
     private Spinner spLanguage;
+    private EditText etLocation;
 
     @Nullable
     @Override
@@ -46,7 +47,8 @@ public abstract class UserProfileFragment extends Fragment {
         etPassword = binding.etPwd;
         btnProfile = binding.btnProfile;
         spLanguage = binding.spLanguage;
-        changeWidgetConfig(etEmail, etPassword, btnProfile, spLanguage);
+        etLocation = binding.etLocation;
+        changeWidgetConfig(etEmail, etPassword, btnProfile, spLanguage, etLocation);
         btnProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,7 +78,7 @@ public abstract class UserProfileFragment extends Fragment {
      * Abstract classes for subclass to use
      */
     // for changing the widget configurations
-    public abstract void changeWidgetConfig(EditText etEmail, EditText etPassword, Button btnProfile, Spinner spLanguage);
+    public abstract void changeWidgetConfig(EditText etEmail, EditText etPassword, Button btnProfile, Spinner spLanguage, EditText etLocation);
     // for creating/updating user information
     public abstract void setupUserInformation(String email, String password, String language);
 }
