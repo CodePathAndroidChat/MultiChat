@@ -76,13 +76,13 @@ public class UserListsAdapter extends RecyclerView.Adapter<UserListsAdapter.View
             tvName.setText(user.email);
             tvOriginalLanguage.setText(user.language);
             tvLocation.setText(user.country);
-            ivMsgArrow.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     arrowClickListener.onDirectMsgClick(view, getAdapterPosition());
                 }
             });
-
+            
             TextDrawable drawable = TextDrawable.builder()
                 .buildRound(user.email.substring(0, 1).toUpperCase(), context.getResources().getColor(R.color.green_light));
             ivAvatar.setImageDrawable(drawable);
