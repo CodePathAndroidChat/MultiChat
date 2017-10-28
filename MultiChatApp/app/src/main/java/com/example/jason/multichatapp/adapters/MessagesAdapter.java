@@ -182,16 +182,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
 
             if (user == null || user.email == null) {
+                final ViewHolder _holder = holder;
                 Log.d("--USER-IS_NULL", "NULLLLL");
                 // THIS SEEMS TO FETCH THINGS FOR US and no more null :/.. no more is needed.
                 // Kinda weird... it would work, I would expect to have to fill user by hand.
                 userRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-//                        for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-//                            // easy
-//                            String value = dataSnapshot1.getValue(String.class);
-//                        }
+
+                        Map<String, String > user = (Map<String, String>) dataSnapshot.getValue();
+                        PublicUser publicUser = new PublicUser().fromObject(user);
+                        setUserStuff(_holder, publicUser);
+                        Log.d("------!!!!!!----", "FETCHED!!!");
+
                     }
 
                     @Override
