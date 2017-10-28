@@ -7,10 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.example.jason.multichatapp.R;
 import com.example.jason.multichatapp.models.PublicUser;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -21,6 +24,9 @@ import java.util.List;
 public class UserListsAdapter extends RecyclerView.Adapter<UserListsAdapter.ViewHolder> {
     // callback to handle arrow click that links to direct message screen
     private OnDirectMsgArrowClick arrowClickListener;
+    private FirebaseAuth mAuth;
+    private FirebaseUser firebaseUser;
+
     public interface OnDirectMsgArrowClick {
         void onDirectMsgClick(View view, int position);
     }
@@ -40,6 +46,8 @@ public class UserListsAdapter extends RecyclerView.Adapter<UserListsAdapter.View
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(this.context);
         View view = inflater.inflate(R.layout.item_users_list, parent, false);
+        mAuth = FirebaseAuth.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
         return new ViewHolder(view);
     }
 
@@ -74,15 +82,22 @@ public class UserListsAdapter extends RecyclerView.Adapter<UserListsAdapter.View
 
         public void bind(PublicUser user) {
             tvName.setText(user.email);
+            final PublicUser _user = user;
             tvOriginalLanguage.setText(user.language);
             tvLocation.setText(user.country);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    arrowClickListener.onDirectMsgClick(view, getAdapterPosition());
+                    if ( _user.email.equals(firebaseUser.getEmail())) {
+                        Toast.makeText(context, "That is you! :) ",
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        arrowClickListener.onDirectMsgClick(view, getAdapterPosition());
+                    }
+
                 }
             });
-            
+
             TextDrawable drawable = TextDrawable.builder()
                 .buildRound(user.email.substring(0, 1).toUpperCase(), context.getResources().getColor(R.color.green_light));
             ivAvatar.setImageDrawable(drawable);
