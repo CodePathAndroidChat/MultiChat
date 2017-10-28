@@ -186,22 +186,27 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                 Log.d("--USER-IS_NULL", "NULLLLL");
                 // THIS SEEMS TO FETCH THINGS FOR US and no more null :/.. no more is needed.
                 // Kinda weird... it would work, I would expect to have to fill user by hand.
-                userRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                if (userId != null ) {
+                    userRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
 
-                        Map<String, String > user = (Map<String, String>) dataSnapshot.getValue();
-                        PublicUser publicUser = new PublicUser().fromObject(user);
-                        setUserStuff(_holder, publicUser);
-                        Log.d("------!!!!!!----", "FETCHED!!!");
+                            Map<String, String> user = (Map<String, String>) dataSnapshot.getValue();
+                            PublicUser publicUser = new PublicUser().fromObject(user);
+                            setUserStuff(_holder, publicUser);
+                            Log.d("------!!!!!!----", "FETCHED!!!");
 
-                    }
+                        }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                    }
-                });
+                        }
+                    });
+                } else {
+                    Log.d("USERID-NULL", "NULL");
+
+                }
 
             } else {
                 setUserStuff(holder, user);
@@ -243,10 +248,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     }
 
     private int setFlagImageForUser(PublicUser user) {
-//        if (user == null) {
-//            return R.drawable.us_icon;
-//        }
-//
+        if (user == null) {
+            return R.drawable.us_icon;
+        }
+
         if( user.country == null ) {
             return R.drawable.us_icon; // TODO: return world icon
         }
