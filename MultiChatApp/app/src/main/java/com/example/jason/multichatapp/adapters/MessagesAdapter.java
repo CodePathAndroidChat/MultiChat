@@ -3,6 +3,7 @@ package com.example.jason.multichatapp.adapters;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,11 @@ import com.example.jason.multichatapp.Utils.Utils;
 import com.example.jason.multichatapp.models.ChatMessage;
 import com.example.jason.multichatapp.models.PublicUser;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +34,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     private List<ChatMessage> mChatMessages;
     private Map<String, PublicUser> mPublicUserMap;
+
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference userRef;
+    private String userDbName = "publicUsers";
+
 
     private Context mContext;
     private ViewHolder mViewHolder;
@@ -89,6 +100,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             ivAvatar = (ImageView) itemView.findViewById(R.id.ivAvatar);
             ivMyAvatar = (ImageView) itemView.findViewById(R.id.ivMyAvatar);
             itemView.setOnClickListener(this);
+            mDatabase = FirebaseDatabase.getInstance();
+            userRef = mDatabase.getReference(userDbName);
         }
 
         @Override
@@ -160,46 +173,78 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         //other user view on the left
         } else {
             PublicUser user = findUserEmail(userId);
-            holder.rlMessage.setVisibility(View.VISIBLE);
-            holder.rlMyMessage.setVisibility(View.INVISIBLE);
-            holder.rlMessage.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-            // Set item views based on your views and data model
             TextView textView = holder.tvMessage;
             textView.setText(messageToDisplay);
-            TextView userName = holder.tvUserName;
-            if (user != null) {
-                userName.setText(user.email);
-                TextView lang = holder.tvOriginalLanguage;
-                lang.setText(user.language);
-            } else {
-                userName.setText(userId);
-            }
-            ImageView flagView = holder.ivFlag;
-            TextDrawable drawable;
-            if (user != null) {
-                flagView.setImageResource(setFlagImageForUser(user));
-                drawable = TextDrawable.builder()
-                        .buildRound(user.email.substring(0, 1).toUpperCase(), mContext.getResources().getColor(R.color.green_light));
-            } else {
-                flagView.setImageResource(R.drawable.us_icon);
-                drawable = TextDrawable.builder()
-                        .buildRound("Default", mContext.getResources().getColor(R.color.green_light));
-            }
             TextView time = holder.tvTimeAgo;
             time.setText(new DateTimeUtils().getRelativeTimeAgo(message.getTimestamp()));
             TextView originalMessage =  holder.tvOriginalMessage;
             originalMessage.setText(message.getText());
-            holder.ivAvatar.setImageDrawable(drawable);
+
+
+            if (user == null || user.email == null) {
+                Log.d("--USER-IS_NULL", "NULLLLL");
+                // THIS SEEMS TO FETCH THINGS FOR US and no more null :/.. no more is needed.
+                userRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+//                            // easy
+//                            String value = dataSnapshot1.getValue(String.class);
+//                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+            } else {
+                setUserStuff(holder, user);
+            }
+
         }
     }
 
-    private int setFlagImageForUser(PublicUser user) {
-        if (user == null) {
-            return R.drawable.us_icon;
+    private void setUserStuff(ViewHolder holder, PublicUser user) {
+        holder.rlMessage.setVisibility(View.VISIBLE);
+        holder.rlMyMessage.setVisibility(View.INVISIBLE);
+        holder.rlMessage.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+        // Set item views based on your views and data model
+
+        TextView userName = holder.tvUserName;
+        if (user != null) {
+            userName.setText(user.email);
+            TextView lang = holder.tvOriginalLanguage;
+            lang.setText(user.language);
+        } else {
+            userName.setText("anonymous");
+        }
+        ImageView flagView = holder.ivFlag;
+        TextDrawable drawable;
+        if (user != null) {
+            flagView.setImageResource(setFlagImageForUser(user));
+            drawable = TextDrawable.builder()
+                    .buildRound(user.email.substring(0, 1).toUpperCase(), mContext.getResources().getColor(R.color.green_light));
+        } else {
+            //
+
+            //
+            flagView.setImageResource(R.drawable.us_icon);
+            drawable = TextDrawable.builder()
+                    .buildRound("Default", mContext.getResources().getColor(R.color.green_light));
         }
 
+        holder.ivAvatar.setImageDrawable(drawable);
+    }
+
+    private int setFlagImageForUser(PublicUser user) {
+//        if (user == null) {
+//            return R.drawable.us_icon;
+//        }
+//
         if( user.country == null ) {
-            return R.drawable.us_icon;
+            return R.drawable.us_icon; // TODO: return world icon
         }
         switch (user.country) {
             case "US":
