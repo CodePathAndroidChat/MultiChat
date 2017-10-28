@@ -1,12 +1,10 @@
 package com.example.jason.multichatapp.activities;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,7 +13,6 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +30,6 @@ import com.example.jason.multichatapp.fragments.DirectMessageFragment;
 import com.example.jason.multichatapp.fragments.EditProfileFragment;
 import com.example.jason.multichatapp.fragments.UsersListFragment;
 import com.example.jason.multichatapp.models.PublicUser;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -41,13 +37,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.maps.android.ui.IconGenerator;
-
-import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 public class MainActivity extends AppCompatActivity implements UsersListFragment.LoadPrivateChatroomListener, OnMapReadyCallback {
 
@@ -69,13 +61,14 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
     private SupportMapFragment supportMapFragment;
     private GoogleMap googleMap;
 
-    private static final int REQUEST_CODE_LOCATION = 1;
-    private static final int REQUEST_CODE_LOCATION_COARSE = 2;
+    private SharedPreferences userInfoLocal;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Initialize the FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
+        userInfoLocal = this.getSharedPreferences(getString(R.string.user_info), Context.MODE_PRIVATE);
         // error check for google map api key
         if (TextUtils.isEmpty(getResources().getString(R.string.google_maps_key))) {
             throw new IllegalStateException("You forgot to supply a Google Maps API key");
@@ -242,72 +235,17 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public void setupMap(GoogleMap googleMap) {
         Log.d(TAG, "setupGoogleMap called");
-        askPermissionAndGetUserLocation();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void askPermissionAndGetUserLocation() {
-        // ask user permission if the user hasn't accept to access his/her location
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) &&
-                        shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    // TODO: explanation on why we need the access current location permission
-
-                }
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_CODE_LOCATION);
-        } else {
-            // if permission is granted already, get user location
-            getUserCurrentLocation();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CODE_LOCATION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "permission granted");
-                getUserCurrentLocation();
-            } else {
-                Log.d(TAG, "permission denied");
-            }
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private void getUserCurrentLocation() {
-        googleMap.setMyLocationEnabled(true);
-        // this client is the main entry point for interaction with the fused location provider(location API in Google Play)
-        FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
-        locationClient.getLastLocation()
-                .addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-//                        add pin here...?
-                        Log.d(TAG, "lat: " + location.getLatitude() + "\tlong:" + location.getLongitude());
-                        BitmapDescriptor icon = MapUtils.createBubble(MainActivity.this, IconGenerator.STYLE_ORANGE, getString(R.string.you_are_here));
-                        MapUtils.addMarker(googleMap, new LatLng(location.getLatitude(), location.getLongitude()),icon);
-                        CameraUpdate center=
-                            CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),
-                                location.getLongitude()));
-                        CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
-
-                        googleMap.moveCamera(center);
-                        googleMap.animateCamera(zoom);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                });
+        // add end user maker
+        BitmapDescriptor icon = MapUtils.createBubble(MainActivity.this, IconGenerator.STYLE_ORANGE, "You are here");
+        MapUtils.addMarker(googleMap, new LatLng(userInfoLocal.getFloat(getString(R.string.latitude), 0), userInfoLocal.getFloat(getString(R.string.longitude), 0)),icon);
+        //TODO: get marker from other users
+//        addOtherUsersMarker();
+        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(userInfoLocal.getFloat(getString(R.string.latitude), 0), userInfoLocal.getFloat(getString(R.string.longitude), 0)));
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+        googleMap.moveCamera(center);
+        googleMap.animateCamera(zoom);
     }
 
     @Override

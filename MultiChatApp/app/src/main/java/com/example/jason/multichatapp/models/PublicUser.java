@@ -15,22 +15,26 @@ public class PublicUser {
     public String email; // TODO: omit this from being shared publicly instaed share a unique username
     public String uid;
     public String language;
-    public String location;
+    public String country;
+    public String states;
+
 
     public PublicUser() {
 
     }
-    public PublicUser(String uid, String email, String language, String location) {
+    public PublicUser(String uid, String email, String language, String country, String states) {
         this.uid= uid;
         this.email = email;
         this.language = language;
-        this.location = location;
+        this.country = country;
+        this.states = states;
     }
     public PublicUser fromObject(Map<String, String> message) {
         this.uid = message.get("uid");
         this.email = message.get("email");
         this.language = message.get("language");
-        this.location = message.get("location");
+        this.country = message.get("country");
+        this.states = message.get("states");
         return this;
     }
 
@@ -39,6 +43,7 @@ public class PublicUser {
             "{uid: " + this.uid +
             ", email: " + this.email +
             ", language: " + this.language +
-            ", location: " + this.location + "}";
+            ", country: " + this.country +
+                ", states: " + this.states + "}";
     }
 }

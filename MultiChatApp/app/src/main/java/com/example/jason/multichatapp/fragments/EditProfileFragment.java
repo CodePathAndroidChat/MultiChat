@@ -56,7 +56,7 @@ public class EditProfileFragment extends UserProfileFragment implements Authenti
     }
 
     @Override
-    public void changeWidgetConfig(EditText etEmail, EditText etPassword, Button btnProfile, Spinner spLanguage) {
+    public void changeWidgetConfig(EditText etEmail, EditText etPassword, Button btnProfile, Spinner spLanguage, EditText etLocation) {
         // change to save since we are in edit profile page
         etEmail.setText(firebaseUser.getEmail());
         btnProfile.setText(getResources().getString(R.string.save));
@@ -108,7 +108,7 @@ public class EditProfileFragment extends UserProfileFragment implements Authenti
                         if (task.isSuccessful()) {
                             Utils.showSnackBar(getView(), "password update success");
                             // since password will always get updated(event though user use the same password to update),
-                            // and this method will always gets called changing the language and location goes here.
+                            // and this method will always gets called changing the language and country goes here.
                             // Because, we don't know email will get updated or not.
                             updateDatabaseAndPref(null, newLanguage, "USA");
                         } else {
