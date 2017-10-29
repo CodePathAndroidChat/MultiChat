@@ -132,7 +132,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         // Get the data model based on position
         ChatMessage message = mChatMessages.get(position);
         String userId = message.getName();
-
+        if( userId == null ) {
+            Log.d("null", "---------");
+        }
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("user information", Context.MODE_PRIVATE);
         String email = sharedPreferences.getString("email", null);
         String uid = sharedPreferences.getString("uid", null);
@@ -232,16 +234,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         ImageView flagView = holder.ivFlag;
         TextDrawable drawable;
         if (user != null) {
+
             flagView.setImageResource(setFlagImageForUser(user));
             drawable = TextDrawable.builder()
-                    .buildRound(user.email.substring(0, 1).toUpperCase(), mContext.getResources().getColor(R.color.green_light));
-        } else {
-            //
+                    .buildRound(user.email.substring(0, 1).toUpperCase()
+                            , mContext.getResources().getColor(R.color.green_light));
 
-            //
+        } else {
+
             flagView.setImageResource(R.drawable.us_icon);
             drawable = TextDrawable.builder()
                     .buildRound("Default", mContext.getResources().getColor(R.color.green_light));
+
         }
 
         holder.ivAvatar.setImageDrawable(drawable);
