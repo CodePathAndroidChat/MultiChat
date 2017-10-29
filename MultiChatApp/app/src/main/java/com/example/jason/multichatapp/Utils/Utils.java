@@ -84,9 +84,7 @@ public class Utils {
             Log.d(LOG_TAG, "fail to get the address: " + e.getMessage());
 
         }
-
         return addresses.get(0);
     }
-
 
 }

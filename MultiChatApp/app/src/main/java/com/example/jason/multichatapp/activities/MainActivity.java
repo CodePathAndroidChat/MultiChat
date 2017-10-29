@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
+import android.location.Address;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -41,7 +42,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.maps.android.ui.IconGenerator;
 
-public class MainActivity extends AppCompatActivity implements UsersListFragment.LoadPrivateChatroomListener, OnMapReadyCallback {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+public class MainActivity extends AppCompatActivity implements
+        UsersListFragment.LoadPrivateChatroomListener,
+        ChatRoomFragment.GetAllPublicUserInfoListener,
+        OnMapReadyCallback {
 
     private final String TAG = "@@@";
     private FirebaseAuth mAuth;
@@ -62,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
     private GoogleMap googleMap;
 
     private SharedPreferences userInfoLocal;
+    // used for saving the title location in order to add marker on to the map
+    private Map<String, LatLng> locationMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
         // Initialize the FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
         userInfoLocal = this.getSharedPreferences(getString(R.string.user_info), Context.MODE_PRIVATE);
+        locationMap = new HashMap<>();
         // error check for google map api key
         if (TextUtils.isEmpty(getResources().getString(R.string.google_maps_key))) {
             throw new IllegalStateException("You forgot to supply a Google Maps API key");
@@ -236,16 +247,20 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
 
 
     public void setupMap(GoogleMap googleMap) {
-        Log.d(TAG, "setupGoogleMap called");
         // add end user maker
-        BitmapDescriptor icon = MapUtils.createBubble(MainActivity.this, IconGenerator.STYLE_ORANGE, "You are here");
+        BitmapDescriptor icon = MapUtils.createBubble(MainActivity.this, IconGenerator.STYLE_DEFAULT, getString(R.string.you_are_here));
         MapUtils.addMarker(googleMap, new LatLng(userInfoLocal.getFloat(getString(R.string.latitude), 0), userInfoLocal.getFloat(getString(R.string.longitude), 0)),icon);
-        //TODO: get marker from other users
-//        addOtherUsersMarker();
+        Random random = new Random();
+        for (Map.Entry<String, LatLng> marker : locationMap.entrySet()) {
+            // obtain the string before @XOXOX.com in the user email address
+            int endOfNameIndex = marker.getKey().indexOf("@");
+            String userName = marker.getKey().substring(0, endOfNameIndex);
+            BitmapDescriptor otherUserIcon = MapUtils.createBubble(MainActivity.this, random.nextInt(IconGenerator.STYLE_ORANGE) + IconGenerator.STYLE_WHITE, userName);
+            MapUtils.addMarker(googleMap, marker.getValue(), otherUserIcon);
+        }
+        // setting up camera angle
         CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(userInfoLocal.getFloat(getString(R.string.latitude), 0), userInfoLocal.getFloat(getString(R.string.longitude), 0)));
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
         googleMap.moveCamera(center);
-        googleMap.animateCamera(zoom);
     }
 
     @Override
@@ -255,5 +270,13 @@ public class MainActivity extends AppCompatActivity implements UsersListFragment
         directMessageFragment = DirectMessageFragment.newInstance(chatroomName);
         showFragment(directMessageFragment, new Fragment[]{supportMapFragment, usersListFragment, editProfileFragment, chatRoomFragment});
 
+    }
+    // callback to getting all the public user information
+    @Override
+    public void onAllUserInfo(Map<String, PublicUser> usersMap) {
+        for (PublicUser user : usersMap.values()) {
+            Address address = Utils.getLanAndLog(this, user.country, user.states);
+            locationMap.put(user.email, new LatLng(address.getLatitude(), address.getLongitude()));
+        }
     }
 }

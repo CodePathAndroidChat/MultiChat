@@ -49,6 +49,11 @@ import cz.msebera.android.httpclient.Header;
  */
 
 public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemClickListener {
+    private GetAllPublicUserInfoListener allPublicUserInfoListener;
+    public interface GetAllPublicUserInfoListener {
+        void onAllUserInfo(Map<String, PublicUser> userMap);
+
+    }
     private static final String LOG_TAG = ChatRoomFragment.class.getSimpleName();
 
     private final String URL = "https://translation.googleapis.com/language/translate/v2";
@@ -74,13 +79,24 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
     private String dbName = "message";
     private String userDbName = "publicUsers";
     private String roomName = "globalRoom";
-    public static ChatRoomFragment newInstance() {
 
+    public static ChatRoomFragment newInstance() {
         Bundle args = new Bundle();
         args.putString("roomName", "globalRoom");
         ChatRoomFragment fragment = new ChatRoomFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof GetAllPublicUserInfoListener) {
+            allPublicUserInfoListener = (GetAllPublicUserInfoListener) context;
+        } else {
+            throw new ClassCastException(context.getClass().getSimpleName() +
+            " must implement " + ChatRoomFragment.GetAllPublicUserInfoListener.class.getSimpleName());
+        }
     }
 
     @Override
@@ -233,6 +249,8 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
                     Log.d(LOG_TAG, publicUser.toString());
                     mUserList.put(publicUser.uid, publicUser);
                 }
+                // passing all the user data back to Activity
+                allPublicUserInfoListener.onAllUserInfo(mUserList);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {

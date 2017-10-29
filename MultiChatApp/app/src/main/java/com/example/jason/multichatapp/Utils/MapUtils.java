@@ -21,16 +21,14 @@ public class MapUtils {
         IconGenerator iconGenerator = new IconGenerator(context);
         iconGenerator.setStyle(style);
         Bitmap bitmap = iconGenerator.makeIcon(title);
-        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(bitmap);
-        return bitmapDescriptor;
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
     public static Marker addMarker(GoogleMap map, LatLng point, BitmapDescriptor icon) {
         MarkerOptions options = new MarkerOptions()
                 .position(point)
                 .icon(icon);
-        Marker marker = map.addMarker(options);
-        return marker;
+        return map.addMarker(options);
     }
 
 }

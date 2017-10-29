@@ -32,6 +32,8 @@ import java.util.Map;
 
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder> {
 
+    private static final String LOG_TAG = MessagesAdapter.class.getSimpleName();
+
     private List<ChatMessage> mChatMessages;
     private Map<String, PublicUser> mPublicUserMap;
 
