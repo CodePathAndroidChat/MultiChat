@@ -22,6 +22,8 @@ import com.example.jason.multichatapp.adapters.MessagesAdapter;
 import com.example.jason.multichatapp.databinding.FragmentChatRoomBinding;
 import com.example.jason.multichatapp.models.ChatMessage;
 import com.example.jason.multichatapp.models.PublicUser;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -176,6 +178,11 @@ public class ChatRoomFragment extends Fragment implements MessagesAdapter.ItemCl
                 break;
         }
         DatabaseReference myRef = mDatabase.getReference("message");
+        if (uid == null) {
+            FirebaseUser firebaseUser  = FirebaseAuth.getInstance().getCurrentUser();
+            uid = firebaseUser.getUid();
+        }
+
         myRef.push().setValue(new ChatMessage(
             roomName,
             new Timestamp(System.currentTimeMillis()).toString(),
