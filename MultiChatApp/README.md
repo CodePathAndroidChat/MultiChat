@@ -78,3 +78,11 @@ Files of the wireframe contains in app/main/src/v2
 
 
 * [Sign up](https://i.imgur.com/PQRiO96.gif)
+
+## Week 7 Video Walkthrough
+
+* [Localization](https://i.imgur.com/NRyFWvM.gif)
+
+* [Direct message](https://i.imgur.com/RHfRSTR.gif)
+
+* [Map location](https://i.imgur.com/1mvOpqQ.gif)
