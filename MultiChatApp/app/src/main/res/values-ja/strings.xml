@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MultiChat</string>
+    <string name="email">メールアドレス</string>
+    <string name="existing_user_login">アカウント登録済み</string>
+    <string name="password">パスワード</string>
+    <string name="log_in">ログイン</string>
+    <string name="sign_up">アカウント登録</string>
+    <string name="enter_your_message">メッセージを入力</string>
+    <string name="send_button">送る</string>
+    <string name="welcome_to_world_chat">World Chatへようこそ</string>
+    <string name="global_chat_room">グローバルチャットルーム</string>
+    <string name="map_of_users">ユーザー世界マップ</string>
+    <string name="users_in_char">ユーザーリスト</string>
+    <string name="edit_profile">プロファイル変更</string>
+    <string name="notifications">お知らせ</string>
+    <string name="log_out">ログアウト</string>
+    <string name="save">保存</string>
+    <string name="authentication_text">今のユーザー名とパスワードを入力してください。</string>
+    <string name="ok">OK</string>
+    <string name="you_are_here">あなたの位置</string>
+    <string name="chat_in">言語</string>
+    <string name="english_lang">英語</string>
+    <string name="spanish_lang">スペイン語</string>
+    <string name="russian_lang">ロシア語</string>
+    <string name="japanese_lang">日本語</string>
+</resources>
