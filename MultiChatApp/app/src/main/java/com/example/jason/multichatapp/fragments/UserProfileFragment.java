@@ -55,7 +55,24 @@ public abstract class UserProfileFragment extends Fragment {
                 hideKeyBoard(view);
                 String email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
-                String language = spLanguage.getSelectedItem().toString();
+                String language;
+                switch ((int)spLanguage.getSelectedItemId()) {
+                    case 0:
+                        language = "English";
+                        break;
+                    case 1:
+                        language = "Spanish";
+                        break;
+                    case 2:
+                        language = "Japanese";
+                        break;
+                    case 3:
+                        language = "Russian";
+                        break;
+                    default:
+                        language = "English";
+                        break;
+                }
                 if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
                     Utils.showSnackBar(binding.getRoot(), "Field cannot be empty");
                 } else {
